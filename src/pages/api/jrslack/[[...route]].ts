@@ -1,26 +1,28 @@
 import NextConnectReceiver from 'util/NextConnectReciever'
-import { App, LogLevel } from '@slack/bolt'
-import { slackBot } from 'src/bots/slack'
+import { App as AppJr, LogLevel } from '@slack/bolt'
 import { prismaConvoStore } from 'src/bots/slackUtil/convoStore'
+import { slackJrBot } from 'src/bots/slackJr'
 
-const slackReceiver = new NextConnectReceiver({
-	signingSecret: process.env.SLACK_SIGNING_SECRET || 'invalid',
+const slackJrReceiver = new NextConnectReceiver({
+	signingSecret: process.env.SLACKJR_SIGNING_SECRET || 'invalid',
 	// The `processBeforeResponse` option is required for all FaaS environments.
 	// It allows Bolt methods (e.g. `app.message`) to handle a Slack request
 	// before the Bolt framework responds to the request (e.g. `ack()`). This is
 	// important because FaaS immediately terminate handlers after the response.
 	processBeforeResponse: true,
 })
-const slack = new App({
-	token: process.env.SLACK_BOT_TOKEN,
-	receiver: slackReceiver,
+
+export const slackJr = new AppJr({
+	token: process.env.SLACKJR_BOT_TOKEN,
+	signingSecret: process.env.SLACKJR_SIGNING_SECRET,
+	receiver: slackJrReceiver,
 	logLevel: LogLevel.DEBUG,
 	convoStore: new prismaConvoStore(),
 	developerMode: false,
 })
 
-slackBot(slack)
+slackJrBot(slackJr)
 
-const slackRouter = slackReceiver.start()
+const slackJrRouter = slackJrReceiver.start()
 
-export { slackRouter as default, slack }
+export default slackJrRouter

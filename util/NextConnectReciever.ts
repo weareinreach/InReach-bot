@@ -1,3 +1,4 @@
+// @ts-ignore
 import { NextApiRequest, NextApiResponse } from 'next'
 import nc, { RequestHandler, NextHandler } from 'next-connect'
 import rawBody from 'raw-body'
@@ -489,7 +490,7 @@ function verifyRequestSignature(
 	const [version, hash] = signature.split('=')
 	hmac.update(`${version}:${ts}:${body}`)
 
-	if (!tsscmp(hash, hmac.digest('hex'))) {
+	if (!tsscmp(hash as string, hmac.digest('hex'))) {
 		throw new ReceiverAuthenticityError(
 			'Slack request signing verification failed. Signature mismatch.'
 		)

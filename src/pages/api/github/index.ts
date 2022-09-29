@@ -1,5 +1,5 @@
 import { createNodeMiddleware, createProbot } from 'probot'
-import { githubBot } from '../../../../bots'
+import { githubBot } from 'src/bots/github'
 
 const probot = createProbot()
 
