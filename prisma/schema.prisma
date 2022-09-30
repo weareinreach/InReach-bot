@@ -87,4 +87,5 @@ model Coworking {
   jrThreadTimestamp String
   startTime         DateTime
   endTime           DateTime?
+  createdAt         DateTime? @default(now())
 }

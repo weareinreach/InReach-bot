@@ -33,6 +33,13 @@ declare global {
 			ZOOM_COWORKING_MEETING_ID: string
 			ZOOM_WEBHOOK_AUTH: string
 			ZOOM_MEETING_URL: string
+			ZOOM_ACCOUNT_ID: string
+			ZOOM_CLIENT_ID: string
+			ZOOM_CLIENT_SECRET: string
+			ZOOM_SECRET_TOKEN: string
+
+			REDIS_ENDPOINT: string
+			REDIS_PASSWORD: string
 		}
 	}
 }
