@@ -1,24 +1,38 @@
-import { App, Middleware, SlackCommandMiddlewareArgs } from '@slack/bolt'
-import {
-	slackJr as slackApp,
-	slackJr,
-} from 'src/pages/api/jrslack/[[...route]]'
-import { newMessageBlock, newMessageInteractive } from './slackUtil'
+import { App, ButtonAction } from '@slack/bolt'
+// import {
+// 	slackJr as slackApp,
+// 	slackJr,
+// } from 'src/pages/api/jrslack/[[...route]]'
+// import { newMessageBlock, newMessageInteractive } from './slackUtil'
+import { storeUser } from './slackUtil/redis'
 
 export const slackJrBot = (app: App) => {
-	app.use(async ({ payload, next, context, body }) => {
-		console.log(payload, body)
-		// try {
-		// 	await context.updateConversation()
-		// } catch (err) {
-		// 	throw err
-		// }
+	app.use(async ({ payload, next }) => {
+		console.log('InReachBotJr', payload)
 		await next()
 	})
-	app.action('button-action', async ({ ack, payload }) => {
-		console.log('button pressed!', payload)
+	app.event('url_verification', async ({ payload, client }) => {
+		console.log(payload)
+	})
+	app.event('message', async ({ event, say }) => {
+		const text = (event as any).text
+		say({
+			text: text || 'Hello world!',
+		})
+	})
+	app.action('button-action', async (params) => {
+		const { ack, body } = params
+		const payload = params.payload as ButtonAction
+
 		await ack()
-		// console.log(payload, context, body)
+		/* It's a debugging statement. */
+		console.group('slack button')
+		console.log('payload', payload)
+		// console.log('body', body)
+		const uuid = payload.value
+		console.groupEnd()
+		console.log(uuid)
+		storeUser(uuid, body.user.id)
 	})
 	app.event('app_home_opened', async ({ event, client }) => {
 		console.log('app home opened', event)

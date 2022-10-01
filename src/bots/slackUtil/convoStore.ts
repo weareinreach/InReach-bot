@@ -9,7 +9,7 @@ export class prismaConvoStore {
 		// Returns a Promise
 		return new Promise((resolve, reject) => {
 			console.log(conversationId, value, expireDate)
-			const convo = prisma.convoStore
+			prisma.convoStore
 				.upsert({
 					where: {
 						conversationId,

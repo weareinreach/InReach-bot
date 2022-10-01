@@ -1,7 +1,8 @@
 import type { App } from '@slack/bolt'
 import type { ZoomReqBody } from 'src/pages/api/zoom'
 import { slack } from 'src/pages/api/slack/[[...route]]'
-import { slackJr } from 'src/pages/api/jrslack/[[...route]]'
+import { slackJr } from 'src/pages/api/slackjr/[[...route]]'
+import { prisma } from 'util/prisma'
 
 const body = {
 	start: 'A new Co-Working Session has Started!',
@@ -24,6 +25,11 @@ const updateMessage = async (
 	channel: string,
 	timestamp?: string
 ) => {
+	const lastRecord = await prisma.coworking.findMany({
+		select: { id: true, createdAt: true },
+		orderBy: { createdAt: 'desc' },
+		take: 1,
+	})
 	const message = {
 		channel,
 		text: timestamp ? body.end : body.start,
@@ -43,8 +49,9 @@ const updateMessage = async (
 						text: timestamp ? button.start : button.join,
 						emoji: true,
 					},
-					value: 'join-meeting',
-					url: process.env.ZOOM_MEETING_URL,
+					value: lastRecord[0]?.id,
+					// url: process.env.ZOOM_MEETING_URL,
+					url: `http://localhost:3000/api/zoom/join?uuid=${lastRecord[0]?.id}`,
 					action_id: 'button-action',
 					style: 'primary',
 					confirm: {
@@ -112,6 +119,9 @@ export const slackUpdateMessage = async (timestamps?: {
 		process.env.SLACKJR_COWORKING_CHANNEL_ID,
 		timestampJr
 	)
+	console.info(`Messages posted/updated: 
+	InReach: ${inreach.ok}
+	JrBoard: ${inreachJr.ok}`)
 	return { inreach, inreachJr }
 }
 

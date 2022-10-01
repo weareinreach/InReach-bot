@@ -68,6 +68,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	}
 	const body: ZoomReqBody = req.body
 	console.info('Incoming webhook', req.body)
+	if (req.body.payload.object.participant)
+		console.info('Participant', req.body.payload.object.participant)
 	if (body.payload.object.id === process.env.ZOOM_COWORKING_MEETING_ID) {
 		const { uuid, start_time } = body.payload.object
 

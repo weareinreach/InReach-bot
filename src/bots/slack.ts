@@ -1,77 +1,31 @@
 import {
 	App,
-	LogLevel,
-	Middleware,
-	SlackCommandMiddlewareArgs,
-	HTTPReceiver,
+	ButtonAction,
+	AckFn,
+	SlackAction,
+	BlockElementAction,
+	SayArguments,
 } from '@slack/bolt'
 import { slack as slackApp } from 'src/pages/api/slack/[[...route]]'
-
-// async function addContext({ payload, client, context, next }) {
-// 	const { user } = await client.users.info({
-// 		user: payload.user_id,
-// 		include_locale: true,
-// 	})
-// 	// Add user's timezone context
-// 	context.tz_offset = user.tz_offset
-// 	// context.updateConversation(payload.user_id, Date.now() + 60 * 5)
-// 	// Pass control to the next middleware function
-// 	await next()
-// }
+import { storeUser } from './slackUtil/redis'
 
 export const slackBot = (app: App) => {
-	app.use(async ({ payload, next, context }) => {
-		console.log(payload)
-		// try {
-		// 	await context.updateConversation()
-		// } catch (err) {
-		// 	throw err
-		// }
+	app.use(async ({ payload, next }) => {
+		console.log('InReachBot', payload)
 		await next()
 	})
 
-	// app.event('message', async ({ event, say, context }) => {
-	// 	console.log(JSON.stringify(event, null, 2))
-	// 	await context.updateConversation()
-	// 	const text = (event as any).text
-	// 	say({
-	// 		text: text || 'Hello world!',
-	// 	})
-	// })
-	// app.command(
-	// 	'/inreach',
-	// 	// addContext,
-	// 	async ({ command, ack, say, context, payload, client }) => {
-	// 		await ack()
-	// 		context.updateConversation(payload.user_id)
-	// 		console.log(JSON.stringify(payload, null, 2))
-	// 		// client.views.open({
-	// 		// 	trigger_id: payload.trigger_id,
-	// 		// 	view: newMessageBlock as ModalView,
-	// 		// })
-	// 		say(newMessageInteractive)
-	// 	}
-	// )
-	app.view(
-		{ callback_id: 'newMessage', type: 'view_submission' },
-		async ({ ack, body, view, client, logger, context, payload }) => {
-			await ack()
-			console.log(JSON.stringify(body, null, 2))
-		}
-	)
+	app.action('button-action', async (params) => {
+		const { ack, body, client } = params
+		const payload = params.payload as ButtonAction
 
-	const noActFields = ['channel', 'wdays', 'time']
-	app.action('button-action', async ({ ack }) => {
 		await ack()
-		// console.log(payload, context, body)
+		/* It's a debugging statement. */
+		const uuid = payload.value
+		const user = await client.users.profile.get({ user: body.user.id })
+		console.log('user', user)
+		storeUser(uuid, user.profile?.display_name as string)
 	})
-	app.action(
-		'clickSave',
-		async ({ ack, body, client, context, payload, say }) => {
-			await ack()
-			say(JSON.stringify(payload, null, 2))
-		}
-	)
 	app.event('app_home_opened', async ({ event, client }) => {
 		console.log('app home opened', event)
 		await client.views.publish({
@@ -89,6 +43,16 @@ export const slackBot = (app: App) => {
 				],
 			},
 		})
+	})
+	app.command('intest', async ({ ack, body, client, respond }) => {
+		const convo = body.channel_id
+		const call = await client.calls.add({
+			external_unique_id: Date.now().toString(),
+			join_url:
+				'https://us06web.zoom.us/j/87291056330?pwd=cjdTMzNkOHY1SGpoNjZ6YXl5WHVrdz09&wp=wJcGEk1bh_OpOaeCoQb_RgXkUOtKveVe7L65Zzd_fl6t3wmI3mAZUY60yncmYk9Y97BMZ7nL4_hY3WsPyH2tM5aM.6iS2UJ3NuZpZSjO9',
+		})
+		await ack()
+		respond(JSON.stringify(call, null, 2))
 	})
 }
 
