@@ -89,3 +89,40 @@ model Coworking {
   endTime           DateTime?
   createdAt         DateTime? @default(now())
 }
+
+model AppInstalls {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  service   String
+  installId String
+  scopes    String?
+}
+
+model LinkedIssues {
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  asanaTicket String
+  githubRepo  String
+  githubIssue String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model ActiveOrg {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  githubOwner String       @unique
+  repos       ActiveRepo[]
+  createdAt   DateTime?    @default(now())
+  updatedAt   DateTime?    @updatedAt
+}
+
+model ActiveRepo {
+  id    String    @id @default(auto()) @map("_id") @db.ObjectId
+  org   ActiveOrg @relation(fields: [orgId], references: [id])
+  orgId String    @db.ObjectId
+  repo  String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@unique([orgId, repo])
+}

@@ -8,6 +8,7 @@ declare global {
 			WEBHOOK_SECRET: string
 			GITHUB_CLIENT_ID: string
 			GITHUB_CLIENT_SECRET: string
+			GITHUB_INSTALL_ID: string
 			ASANA_CLIENT_ID: string
 			ASANA_CLIENT_SECRET: string
 			ASANA_WORKSPACE: string
