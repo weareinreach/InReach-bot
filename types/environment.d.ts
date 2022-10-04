@@ -12,6 +12,7 @@ declare global {
 			ASANA_CLIENT_ID: string
 			ASANA_CLIENT_SECRET: string
 			ASANA_WORKSPACE: string
+			ASANA_PAT: string
 			SLACK_APP_ID: string
 			SLACK_CLIENT_ID: string
 			SLACK_CLIENT_SECRET: string
@@ -41,6 +42,8 @@ declare global {
 
 			REDIS_ENDPOINT: string
 			REDIS_PASSWORD: string
+
+			VERCEL_URL: string
 		}
 	}
 }

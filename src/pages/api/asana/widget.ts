@@ -1,44 +1,25 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { githubClient } from 'src/bots/github'
-
-const widget = {
-	template: 'summary_with_details_v0',
-	metadata: {
-		title: 'My Widget',
-		subtitle: 'Subtitle text',
-		fields: [
-			{
-				name: 'Pill',
-				type: 'pill',
-				text: 'Some text',
-				color: 'green',
-			},
-			{
-				name: 'Text',
-				type: 'text_with_icon',
-				text: 'Some text',
-				icon_url: 'https://www.fillmurray.com/16/16',
-			},
-			{
-				name: 'Text',
-				type: 'text_with_icon',
-				text: 'Some text',
-			},
-		],
-		footer: {
-			footer_type: 'custom_text',
-			text: 'Last updated today',
-		},
-	},
-}
+import NextCors from 'nextjs-cors'
+import { asanaClient } from 'src/bots/asana'
+import { createWidget } from 'src/bots/asana/createWidget'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
+	await NextCors(req, res, {
+		origin: 'https://app.asana.com',
+	})
 	console.log('widget')
-	// console.log(req)
-	console.log('body', req.body)
-	console.log('headers', req.headers)
 	console.log(req.query)
+	if (!req.query.task) return res.status(400).end()
+	const { task, attachment } = req.query
+
+	const widget = await createWidget(task as string, attachment as string)
+
 	res.status(200).json(widget)
 }
 
 export default handler
+
+interface UrlParms {
+	task: string
+	attachment: string
+}

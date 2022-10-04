@@ -1,3 +1,4 @@
 {
-	"exportall.config.folderListener": ["/bots/slackUtil"]
+	"exportall.config.folderListener": ["/bots/slackUtil"],
+	"typescript.tsdk": "node_modules/typescript/lib"
 }

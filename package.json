@@ -20,6 +20,7 @@
 		"@upstash/redis": "^1.13.1",
 		"asana": "^1.0.0",
 		"axios": "^0.27.2",
+		"cookies-next": "^2.1.1",
 		"googleapis": "^108.0.0",
 		"luxon": "^3.0.4",
 		"next": "12.3.1",

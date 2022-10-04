@@ -98,10 +98,14 @@ model AppInstalls {
 }
 
 model LinkedIssues {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  asanaTicket String
-  githubRepo  String
-  githubIssue String
+  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  asanaTicket  String  @unique
+  githubOwner  String
+  githubRepo   String
+  githubIssue  String
+  issueUrl     String
+  attachmentId String?
+  webhookId    String?
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
