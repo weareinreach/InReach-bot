@@ -34,6 +34,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		issue_number: newIssue.data.number,
 		asana_ticket: data.task,
 		asana_workspace: data.workspace,
+		attachment: data.attachment,
+		user: data.user,
 	})
 	res.status(200).json({
 		resource_name: attachedIssue.title,

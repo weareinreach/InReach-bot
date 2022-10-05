@@ -1,24 +1,18 @@
-import { Probot, ProbotOctokit, createProbot } from 'probot'
+import { Probot } from 'probot'
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from 'octokit'
 
+/* Creating a new Octokit client with the appId, privateKey, and installationId. */
 export const githubClient = new Octokit({
 	authStrategy: createAppAuth,
 	auth: {
-		appId: process.env.GITHUB_APP_ID,
-		privateKey: process.env.GITHUB_PRIVATE_KEY.toString(),
+		appId: parseInt(process.env.GITHUB_APP_ID),
+		privateKey: Buffer.from(
+			process.env.GITHUB_PRIVATE_KEY,
+			'base64'
+		).toString(),
 		installationId: parseInt(process.env.GITHUB_INSTALL_ID),
 	},
-})
-
-export const githubClient2 = new ProbotOctokit({
-	authStrategy: () =>
-		createProbot({
-			overrides: {
-				privateKey: process.env.GITHUB_PRIVATE_KEY,
-				appId: process.env.GITHUB_APP_ID,
-			},
-		}),
 })
 
 export const githubBot = (app: Probot) => {

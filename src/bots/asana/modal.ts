@@ -1,31 +1,11 @@
 import { getIssueList, getIssuesFromGH } from './getIssueData'
 import { prisma } from 'util/prisma'
-import { probot } from 'src/pages/api/github'
-import { asanaClient } from '.'
 
-// const getIssues = async (owner: string, repo: string) => {
-// 	const gh = await probot.auth(parseInt(process.env.GITHUB_INSTALL_ID))
-// 	const { data } = await gh.issues.listForRepo({
-// 		owner,
-// 		repo,
-// 	})
-// 	const attachedTicket = /<!--Asana:\d*-->/g
-// 	const filteredIssues = data
-// 		.filter(
-// 			(x) =>
-// 				x.pull_request === undefined && !attachedTicket.test(x.body as string)
-// 		)
-// 		.map((issue) => {
-// 			return {
-// 				owner: owner,
-// 				repo: repo,
-// 				number: issue.number,
-// 				title: issue.title,
-// 				body: issue.body,
-// 			}
-// 		})
-// 	return filteredIssues
-// }
+/**
+ * It returns a radio button field with two options, one for creating a new issue and one for attaching
+ * an existing issue
+ * @param {'create' | 'attach'} [selected] - The default value for the radio button.
+ */
 const createorAttach = (selected?: 'create' | 'attach') => ({
 	type: 'radio_button',
 	id: 'create',
@@ -45,6 +25,7 @@ const createorAttach = (selected?: 'create' | 'attach') => ({
 	],
 })
 
+/* Creating a modal that will be displayed to the user. */
 export const firstModal = {
 	template: 'form_metadata_v0',
 	metadata: {
@@ -58,77 +39,19 @@ export const firstModal = {
 	},
 }
 
-// export const attachModal = async () => {
-// 	const repos = await prisma.activeRepo.findMany({
-// 		select: {
-// 			repo: true,
-// 			org: {
-// 				select: { githubOwner: true },
-// 			},
-// 		},
-// 	})
-
-// 	const issues = await Promise.all(
-// 		repos.map(async (result) => ({
-// 			[`${result.org.githubOwner}/${result.repo}`]: await getIssuesFromGH(
-// 				result.org.githubOwner,
-// 				result.repo
-// 			),
-// 		}))
-// 	).then((x) =>
-// 		x.reduce(
-// 			(prev, curr) => ({
-// 				...prev,
-// 				...curr,
-// 			}),
-// 			{}
-// 		)
-// 	)
-// 	const dropOptions = Object.keys(issues).map((item) => ({
-// 		id: item,
-// 		label: item,
-// 	}))
-// 	console.log(dropOptions)
-
-// 	return {
-// 		template: 'form_metadata_v0',
-// 		metadata: {
-// 			title: 'GitHub Issues',
-// 			submit_button_text: 'Submit',
-// 			on_submit_callback:
-// 				'https://3000.tunnel.joekarow.dev/api/asana/issue/submit',
-// 			on_change_callback: `https://3000.tunnel.joekarow.dev/api/asana/issue/onchange?data=${JSON.stringify(
-// 				issues
-// 			)}`,
-// 			fields: [
-// 				createorAttach('attach'),
-// 				{
-// 					type: 'dropdown',
-// 					id: 'repo',
-// 					name: 'GitHub Repo',
-// 					is_required: true,
-// 					is_watched: true,
-// 					options: dropOptions,
-// 					width: 'half',
-// 				},
-// 				{
-// 					type: 'dropdown',
-// 					id: 'issue',
-// 					name: 'GitHub Repo',
-// 					is_required: true,
-// 					options: [{ id: 'none', label: 'none' }],
-// 					width: 'full',
-// 				},
-// 			],
-// 		},
-// 	}
-// }
 interface DropDownValues {
 	id: string
 	label: string
 	icon_url?: string
 }
 
+/**
+ * It returns an object that contains a template and metadata. The metadata contains the title, submit
+ * button text, and a list of fields. The fields are a dropdown of repos, and if a repo is selected, a
+ * dropdown of issues
+ * @param {string} [repo] - The name of the repo to pre-select in the dropdown.
+ * @returns An object with a template and metadata property.
+ */
 export const attachModal = async (repo?: string) => {
 	const issues = await getIssueList()
 
@@ -187,6 +110,12 @@ export const attachModal = async (repo?: string) => {
 	}
 }
 
+/**
+ * It returns an object that contains a template and metadata. The metadata is a JSON object that
+ * contains the fields that will be displayed in the modal
+ * @param {string} task - The task ID of the task that the modal is being opened on.
+ * @returns A modal object
+ */
 export const createIssueModal = async (task: string) => {
 	const repos = await prisma.activeRepo.findMany({
 		select: {

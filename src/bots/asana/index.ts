@@ -1,10 +1,8 @@
 import asana from 'asana'
 
-// export const asanaClient = asana.Client.create({
-// 	clientId: process.env.ASANA_CLIENT_ID,
-// 	clientSecret: process.env.ASANA_CLIENT_SECRET,
-// 	redirectUri: `${process.env.VERCEL_URL}/api/asana/oauth`,
-// })
-export const asanaClient = asana.Client.create().useAccessToken(
-	process.env.ASANA_PAT
-)
+/**
+ * It takes a user token and returns an Asana client
+ * @param {string} userToken - The user's access token.
+ */
+export const asanaClient = (userToken: string) =>
+	asana.Client.create().useAccessToken(userToken)

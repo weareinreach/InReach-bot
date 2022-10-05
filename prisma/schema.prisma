@@ -12,21 +12,26 @@ datasource db {
 
 // Necessary for Next auth
 model Account {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String
-  type              String
-  provider          String
-  providerAccountId String
-  refresh_token     String? //@db.Text
-  access_token      String? //@db.Text
-  expires_at        Int?
-  token_type        String?
-  scope             String?
-  id_token          String? //@db.Text
-  session_state     String?
-  state             String?
-  ok                Boolean?
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                       String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId                   String
+  type                     String
+  provider                 String
+  providerAccountId        String
+  refresh_token            String?  @db.String //@db.Text
+  access_token             String?  @db.String //@db.Text
+  id_token                 String?  @db.String //@db.Text
+  data                     Json?
+  expires_at               Int?
+  refresh_token_expires_in Int?
+  token_type               String?
+  scope                    String?
+  session_state            String?
+  state                    String?
+  ok                       Boolean?
+  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 
   @@unique([provider, providerAccountId])
 }
@@ -37,6 +42,9 @@ model Session {
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model User {
@@ -49,6 +57,9 @@ model User {
   sessions      Session[]
   createMessage Message[] @relation("createMessage")
   updateMessage Message[] @relation("updateMessage")
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model VerificationToken {
@@ -98,14 +109,15 @@ model AppInstalls {
 }
 
 model LinkedIssues {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  asanaTicket  String  @unique
-  githubOwner  String
-  githubRepo   String
-  githubIssue  String
-  issueUrl     String
-  attachmentId String?
-  webhookId    String?
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  asanaTicket   String  @unique
+  githubOwner   String
+  githubRepo    String
+  githubIssue   String
+  issueUrl      String
+  attachmentId  String?
+  webhookId     String?
+  webhookSecret String?
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -120,13 +132,30 @@ model ActiveOrg {
 }
 
 model ActiveRepo {
-  id    String    @id @default(auto()) @map("_id") @db.ObjectId
-  org   ActiveOrg @relation(fields: [orgId], references: [id])
-  orgId String    @db.ObjectId
-  repo  String
+  id           String      @id @default(auto()) @map("_id") @db.ObjectId
+  org          ActiveOrg   @relation(fields: [orgId], references: [id])
+  orgId        String      @db.ObjectId
+  repo         String
+  asanaBoard   AsanaBoard? @relation(fields: [asanaBoardId], references: [id])
+  asanaBoardId String?     @db.ObjectId
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
 
   @@unique([orgId, repo])
+}
+
+model AsanaBoard {
+  id      String       @id @default(auto()) @map("_id") @db.ObjectId
+  boardId String
+  repos   ActiveRepo[]
+}
+
+model AsanaWebhook {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  webhookId String @unique
+  token     String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }

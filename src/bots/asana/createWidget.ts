@@ -1,7 +1,6 @@
 import { prisma } from 'util/prisma'
-import { probot } from 'src/pages/api/github'
+import { githubClient } from '../github'
 import { DateTime } from 'luxon'
-import { asanaClient } from '.'
 const baseUrl = process.env.VERCEL_URL
 
 const icons = {
@@ -11,49 +10,31 @@ const icons = {
 	closedNoAct: `${baseUrl}/issues/closed2.png`,
 }
 
+/**
+ * It returns an object with the template, metadata, and attachment_id properties
+ * @param {string} task - The task ID of the task that the widget is being created for.
+ * @param {string} attachmentId - The ID of the attachment that was created.
+ * @returns An Asana Widget definition object
+ *
+ */
 export const createWidget = async (task: string, attachmentId: string) => {
-	const gh = await probot.auth(parseInt(process.env.GITHUB_INSTALL_ID))
+	/* Finding the linked issue in the database. */
 	const linkedIssue = await prisma.linkedIssues.findFirst({
 		where: { asanaTicket: task },
 	})
 	if (!linkedIssue) throw new Error('not found')
-	if (linkedIssue.attachmentId !== attachmentId) {
-		// const webhook = await asanaClient.webhooks.create(
-		// 	task,
-		// 	`${baseUrl}/api/asana/webhook`,
-		// 	{
-		// 		filters: [
-		// 			{
-		// 				resource_type: 'attachment',
-		// 				action: 'deleted',
-		// 			},
-		// 			{
-		// 				resource_type: 'attachment',
-		// 				action: 'removed',
-		// 			},
-		// 		],
-		// 	}
-		// )
-		await prisma.linkedIssues.update({
-			where: {
-				id: linkedIssue.id,
-			},
-			data: {
-				attachmentId,
-				// webhookId: webhook.gid,
-			},
-		})
-	}
-	const webhook = await asanaClient.webhooks.getById(
-		linkedIssue.webhookId as string
-	)
-	console.log(webhook)
-	const { data: githubIssue } = await gh.issues.get({
+
+	/* Getting the issue from github. */
+	const { data: githubIssue } = await githubClient.rest.issues.get({
 		owner: linkedIssue?.githubOwner,
 		repo: linkedIssue?.githubRepo,
 		issue_number: parseInt(linkedIssue?.githubIssue),
 	})
 
+	/**
+	 * It returns an object with a status, color, and icon property based on the state of the issue
+	 * @returns An object with three properties: status, color, and icon.
+	 */
 	const getStatus = () => {
 		if (githubIssue.draft) {
 			return {
@@ -82,6 +63,18 @@ export const createWidget = async (task: string, attachmentId: string) => {
 			icon: icons.open,
 		}
 	}
+
+	/**
+	 * It returns a field object with the name "Assigned to:" and the text "No one" if there are no
+	 * assignees, otherwise it returns a field object with the name "Assigned to:" and the text "username +
+	 * x more" if there are more than one assignees, otherwise it returns a field object with the name
+	 * "Assigned to:" and the text "username" if there is only one assignee
+	 * @returns An object with the following properties:
+	 * 	name: 'Assigned to:',
+	 * 	type: 'text_with_icon',
+	 * 	text: 'No one',
+	 * 	icon_url: undefined
+	 */
 	const getAssignees = () => {
 		if (!githubIssue.assignees || !githubIssue.assignees.length)
 			return {
@@ -106,7 +99,7 @@ export const createWidget = async (task: string, attachmentId: string) => {
 			icon_url: githubIssue.assignee?.avatar_url,
 		}
 	}
-	// console.log(JSON.stringify(githubIssue, null, 2))
+
 	return {
 		template: 'summary_with_details_v0',
 		metadata: {

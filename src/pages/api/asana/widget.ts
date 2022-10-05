@@ -7,8 +7,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
-	console.log('widget')
-	console.log(req.query)
+
 	if (!req.query.task) return res.status(400).end()
 	const { task, attachment } = req.query
 

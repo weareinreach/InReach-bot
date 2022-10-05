@@ -6,7 +6,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
-	console.log('attach')
 
 	const submission: IssueSubmission = JSON.parse(req.body.data)
 
@@ -27,6 +26,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		issue_number: parseInt(issue),
 		asana_ticket: submission.task,
 		asana_workspace: submission.workspace,
+		user: submission.user,
+		attachment: submission.attachment,
 	})
 	res.status(200).json({
 		resource_name: attachedIssue.title,

@@ -2,8 +2,12 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { attachModal, createIssueModal } from 'src/bots/asana/modal'
 
+/**
+ * It returns a modal view based on the value of the changed field
+ * @param {OnChangeBody} data - OnChangeBody
+ * @returns A modal view
+ */
 const getView = async (data: OnChangeBody) => {
-	console.log(data)
 	if (data.changed_field === 'create') {
 		if (data.values.create === 'create') {
 			return createIssueModal(data.task.toString())
@@ -20,7 +24,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
-	console.log(req.body.data)
 	const data: OnChangeBody = JSON.parse(req.body.data)
 
 	const view = await getView(data)
