@@ -94,7 +94,7 @@ const updateMessage = async (
 				emoji: true,
 			},
 			value: lastRecord[0]?.id,
-			url: `${process.env.VERCEL_URL}/api/zoom/join?uuid=${lastRecord[0]?.id}`,
+			url: `${process.env.VERCEL_URL}/zoom/${lastRecord[0]?.id}`,
 			action_id: 'button-action',
 			style: 'primary',
 			confirm: {

@@ -48,12 +48,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 				const { user_name } = body.payload.object.participant ?? {
 					user_name: undefined,
 				}
-				const roomInstance = await findRoom(uuid)
+				if (!user_name)
+					return res.status(400).json({ message: 'No user sent!' })
 
-				if (!roomInstance || !user_name) {
-					res.status(500).end()
-					return
-				}
+				const roomInstance = await findRoom(uuid)
+				if (!roomInstance)
+					return res.status(404).json({ message: 'Room not found' })
+
 				if (body.event === EVENT_PARTICIPANT_JOINED) {
 					const person = await getAttendee(user_name)
 					if (person) await addAttendee(person)
@@ -75,7 +76,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 					},
 					true
 				)
-				res.status(200).json(commentResult)
+				res.status(200).json({ commentResult, attendeeUpdate })
 				return
 				break
 			case EVENT_MEETING_STARTED:
@@ -99,10 +100,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			case EVENT_MEETING_ENDED:
 				const roomEnd = await findRoom(uuid)
 
-				if (!roomEnd) {
-					res.status(500).end()
-					return
-				}
+				if (!roomEnd) return res.status(400).json({ message: 'Room not found' })
+
 				const messageEnd = await slackUpdateMessage({
 					timestamp: roomEnd.threadTimestamp,
 					timestampJr: roomEnd.jrThreadTimestamp,
