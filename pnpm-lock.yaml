@@ -10,13 +10,13 @@ specifiers:
   '@slack/web-api': ^6.7.2
   '@types/asana': ^0.18.11
   '@types/luxon': ^3.0.1
-  '@types/node': 18.7.23
+  '@types/node': 18.8.2
   '@types/react': 18.0.21
   '@types/react-dom': 18.0.6
   '@types/tsscmp': ^1.0.0
   '@upstash/redis': ^1.13.1
   asana: ^1.0.0
-  axios: ^0.27.2
+  axios: ^1.0.0
   cookies-next: ^2.1.1
   dotenv: ^16.0.3
   eslint: 8.24.0
@@ -47,7 +47,7 @@ dependencies:
   '@slack/web-api': 6.7.2
   '@upstash/redis': 1.13.1
   asana: 1.0.0
-  axios: 0.27.2
+  axios: 1.0.0
   cookies-next: 2.1.1
   googleapis: 108.0.0
   luxon: 3.0.4
@@ -66,14 +66,14 @@ dependencies:
 devDependencies:
   '@types/asana': 0.18.11
   '@types/luxon': 3.0.1
-  '@types/node': 18.7.23
+  '@types/node': 18.8.2
   '@types/react': 18.0.21
   '@types/react-dom': 18.0.6
   '@types/tsscmp': 1.0.0
   dotenv: 16.0.3
   eslint: 8.24.0
   eslint-config-next: 12.3.1_ypn2ylkkyfa5i233caldtndbqa
-  ts-node: 10.9.1_gbhfbbeqrol7fxixnzbkbuanxe
+  ts-node: 10.9.1_p2zphemn5bk5inasc666rmprwi
   typescript: 4.8.4
 
 packages:
@@ -819,7 +819,7 @@ packages:
       '@slack/types': 2.7.0
       '@slack/web-api': 6.7.2
       '@types/express': 4.17.14
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
       '@types/promise.allsettled': 1.0.3
       '@types/tsscmp': 1.0.0
       axios: 0.26.1
@@ -839,7 +839,7 @@ packages:
     resolution: {integrity: sha512-DTuBFbqu4gGfajREEMrkq5jBhcnskinhr4+AnfJEk48zhVeEv3XnUKGIX98B74kxhYsIMfApGGySTn7V3b5yBA==}
     engines: {node: '>= 12.13.0', npm: '>= 6.12.0'}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@slack/oauth/2.5.4:
@@ -849,7 +849,7 @@ packages:
       '@slack/logger': 3.0.0
       '@slack/web-api': 6.7.2
       '@types/jsonwebtoken': 8.5.9
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
       jsonwebtoken: 8.5.1
       lodash.isstring: 4.0.1
     transitivePeerDependencies:
@@ -862,7 +862,7 @@ packages:
     dependencies:
       '@slack/logger': 3.0.0
       '@slack/web-api': 6.7.2
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
       '@types/p-queue': 2.3.2
       '@types/ws': 7.4.7
       eventemitter3: 3.1.2
@@ -888,7 +888,7 @@ packages:
       '@slack/logger': 3.0.0
       '@slack/types': 2.7.0
       '@types/is-stream': 1.1.0
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
       axios: 0.27.2
       eventemitter3: 3.1.2
       form-data: 2.5.1
@@ -940,7 +940,7 @@ packages:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@types/btoa-lite/1.0.0:
@@ -950,7 +950,7 @@ packages:
   /@types/connect/3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@types/cookie/0.4.1:
@@ -960,7 +960,7 @@ packages:
   /@types/express-serve-static-core/4.17.31:
     resolution: {integrity: sha512-DxMhY+NAsTwMMFHBTtJFNp5qiHKJ7TeqOo23zVEM9alT1Ml27Q3xcTH0xwxn7Q0BbMcVEJOs/7aQtUWupUQN3Q==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
     dev: false
@@ -977,7 +977,7 @@ packages:
   /@types/ioredis/4.28.10:
     resolution: {integrity: sha512-69LyhUgrXdgcNDv7ogs1qXZomnfOEnSmrmMFqKgt1XMJxmoOSG/u3wYy13yACIfKuMJ8IhKgHafDO3sx19zVQQ==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@types/is-base64/1.1.1:
@@ -987,7 +987,7 @@ packages:
   /@types/is-stream/1.1.0:
     resolution: {integrity: sha512-jkZatu4QVbR60mpIzjINmtS1ZF4a/FqdTUTBeQDVOQ2PYyidtwFKr0B5G6ERukKwliq+7mIXvxyppwzG5EgRYg==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@types/js-yaml/4.0.5:
@@ -1001,7 +1001,7 @@ packages:
   /@types/jsonwebtoken/8.5.9:
     resolution: {integrity: sha512-272FMnFGzAVMGtu9tkr29hRL6bZj4Zs1KZNeHLnKqAvp06tAIcarTMwOh8/8bz4FmKRcMxZhZNeUAQsNLoiPhg==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@types/lru-cache/5.1.1:
@@ -1016,12 +1016,12 @@ packages:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
     dev: false
 
-  /@types/node/16.11.63:
-    resolution: {integrity: sha512-3OxnrEQLBz8EIIaHpg3CibmTAEGkDBcHY4fL5cnBwg2vd2yvHrUDGWxK+MlYPeXWWIoJJW79dGtU+oeBr6166Q==}
+  /@types/node/16.11.64:
+    resolution: {integrity: sha512-z5hPTlVFzNwtJ2LNozTpJcD1Cu44c4LNuzaq1mwxmiHWQh2ULdR6Vjwo1UGldzRpzL0yUEdZddnfqGW2G70z6Q==}
     dev: false
 
-  /@types/node/18.7.23:
-    resolution: {integrity: sha512-DWNcCHolDq0ZKGizjx2DZjR/PqsYwAcYUJmfMWqtVU2MBMG5Mo+xFZrhGId5r/O5HOuMPyQEcM6KUBp5lBZZBg==}
+  /@types/node/18.8.2:
+    resolution: {integrity: sha512-cRMwIgdDN43GO4xMWAfJAecYn8wV4JbsOGHNfNUIDiuYkUYAR5ec4Rj7IO2SAhFPEfpPtLtUTbbny/TCT7aDwA==}
 
   /@types/p-queue/2.3.2:
     resolution: {integrity: sha512-eKAv5Ql6k78dh3ULCsSBxX6bFNuGjTmof5Q/T6PiECDq0Yf8IIn46jCyp3RJvCi8owaEmm3DZH1PEImjBMd/vQ==}
@@ -1036,20 +1036,20 @@ packages:
   /@types/pino-pretty/4.7.5:
     resolution: {integrity: sha512-rfHe6VIknk14DymxGqc9maGsRe8/HQSvM2u46EAz2XrS92qsAJnW16dpdFejBuZKD8cRJX6Aw6uVZqIQctMpAg==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
       '@types/pino': 6.3.12
     dev: false
 
   /@types/pino-std-serializers/2.4.1:
     resolution: {integrity: sha512-17XcksO47M24IVTVKPeAByWUd3Oez7EbIjXpSbzMPhXVzgjGtrOa49gKBwxH9hb8dKv58OelsWQ+A1G1l9S3wQ==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@types/pino/6.3.12:
     resolution: {integrity: sha512-dsLRTq8/4UtVSpJgl9aeqHvbh6pzdmjYD3C092SYgLD2TyoCqHpTJk6vp8DvCTGGc7iowZ2MoiYiVUUCcu7muw==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
       '@types/pino-pretty': 4.7.5
       '@types/pino-std-serializers': 2.4.1
       sonic-boom: 2.8.0
@@ -1097,7 +1097,7 @@ packages:
     resolution: {integrity: sha512-z5xyF6uh8CbjAu9760KDKsH2FcDxZ2tFCsA4HIMWE6IkiYMXfVoa+4f9KX+FN0ZLsaMw1WNG2ETLA6N+/YA+cg==}
     dependencies:
       '@types/mime': 3.0.1
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@types/tsscmp/1.0.0:
@@ -1106,7 +1106,7 @@ packages:
   /@types/ws/7.4.7:
     resolution: {integrity: sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==}
     dependencies:
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
     dev: false
 
   /@typescript-eslint/parser/5.38.1_ypn2ylkkyfa5i233caldtndbqa:
@@ -1401,6 +1401,16 @@ packages:
       - debug
     dev: false
 
+  /axios/1.0.0:
+    resolution: {integrity: sha512-SsHsGFN1qNPFT5QhSoSD37SHDfGyLSW5AESmyLk2JeCMHv5g0I9g0Hz/zQHx2KNe0jGXh2q2hAm7OdkXm360CA==}
+    dependencies:
+      follow-redirects: 1.15.2
+      form-data: 4.0.0
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+    dev: false
+
   /axobject-query/2.2.0:
     resolution: {integrity: sha512-Td525n+iPOOyUQIeBfcASuG6uJsDOITl7Mds5gFyerkWiX7qhUTdYUBlSgNMyVqtSJqwpt1kXGLdUt6SykLMRA==}
     dev: true
@@ -1614,7 +1624,7 @@ packages:
     resolution: {integrity: sha512-AZGZPdL1hU3jCjN2UMJTGhLOYzNUN9Gm+v8BdptYIHUdwz397Et1p+sZRfvAl8pKnnmMdX2Pk9xDRKCGBum6GA==}
     dependencies:
       '@types/cookie': 0.4.1
-      '@types/node': 16.11.63
+      '@types/node': 16.11.64
       cookie: 0.4.2
     dev: false
 
@@ -3845,6 +3855,10 @@ packages:
       ipaddr.js: 1.9.1
     dev: false
 
+  /proxy-from-env/1.1.0:
+    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+    dev: false
+
   /psl/1.9.0:
     resolution: {integrity: sha512-E/ZsdU4HLs/68gYzgGTkMicWTLPdAftJLfJFlLUAAKZGkStNU72sZjT66SnMDVOfOWY/YAoiD7Jxa9iHvngcag==}
     dev: false
@@ -4329,7 +4343,7 @@ packages:
       regexparam: 1.3.0
     dev: false
 
-  /ts-node/10.9.1_gbhfbbeqrol7fxixnzbkbuanxe:
+  /ts-node/10.9.1_p2zphemn5bk5inasc666rmprwi:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -4348,7 +4362,7 @@ packages:
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.3
-      '@types/node': 18.7.23
+      '@types/node': 18.8.2
       acorn: 8.8.0
       acorn-walk: 8.2.0
       arg: 4.1.3
