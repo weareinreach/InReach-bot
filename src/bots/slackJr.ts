@@ -1,38 +1,25 @@
 import { App, ButtonAction } from '@slack/bolt'
-// import {
-// 	slackJr as slackApp,
-// 	slackJr,
-// } from 'src/pages/api/jrslack/[[...route]]'
-// import { newMessageBlock, newMessageInteractive } from './slackUtil'
-import { storeUser } from './slackUtil/redis'
+import { storeUser, storeAttendee } from './slackUtil/redis'
 
 export const slackJrBot = (app: App) => {
 	app.use(async ({ payload, next }) => {
 		console.log('InReachBotJr', payload)
 		await next()
 	})
-	app.event('url_verification', async ({ payload, client }) => {
-		console.log(payload)
-	})
-	app.event('message', async ({ event, say }) => {
-		const text = (event as any).text
-		say({
-			text: text || 'Hello world!',
-		})
-	})
 	app.action('button-action', async (params) => {
-		const { ack, body } = params
+		const { ack, body, client } = params
 		const payload = params.payload as ButtonAction
 
 		await ack()
-		/* It's a debugging statement. */
-		console.group('slack button')
-		console.log('payload', payload)
-		// console.log('body', body)
+
 		const uuid = payload.value
-		console.groupEnd()
-		console.log(uuid)
-		storeUser(uuid, body.user.id)
+		const user = await client.users.profile.get({ user: body.user.id })
+		await storeUser(uuid, user.profile?.display_name as string)
+		await storeAttendee(user.profile?.display_name as string, {
+			id: body.user.id,
+			org: body.team!.id,
+			profile: user.profile!,
+		})
 	})
 	app.event('app_home_opened', async ({ event, client }) => {
 		console.log('app home opened', event)

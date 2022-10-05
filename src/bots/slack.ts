@@ -1,13 +1,6 @@
-import {
-	App,
-	ButtonAction,
-	AckFn,
-	SlackAction,
-	BlockElementAction,
-	SayArguments,
-} from '@slack/bolt'
+import { App, ButtonAction } from '@slack/bolt'
 import { slack as slackApp } from 'src/pages/api/slack/[[...route]]'
-import { storeUser } from './slackUtil/redis'
+import { storeAttendee, storeUser } from './slackUtil/redis'
 
 export const slackBot = (app: App) => {
 	app.use(async ({ payload, next }) => {
@@ -23,8 +16,12 @@ export const slackBot = (app: App) => {
 		/* It's a debugging statement. */
 		const uuid = payload.value
 		const user = await client.users.profile.get({ user: body.user.id })
-		console.log('user', user)
 		storeUser(uuid, user.profile?.display_name as string)
+		await storeAttendee(user.profile?.display_name as string, {
+			id: body.user.id,
+			org: body.team!.id,
+			profile: user.profile!,
+		})
 	})
 	app.event('app_home_opened', async ({ event, client }) => {
 		console.log('app home opened', event)

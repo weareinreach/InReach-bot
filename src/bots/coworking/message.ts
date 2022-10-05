@@ -20,63 +20,112 @@ const notice = {
 	cancel: "Stop, I've changed my mind!",
 }
 
+const attendees = async () => {
+	const party = await prisma.coworkingAttendee.findMany({
+		select: { name: true, image: true },
+	})
+	const partyList = party.flatMap((person, i, arr) => {
+		let name
+		if (i + 1 === arr.length) name = person.name
+		else if (i + 1 === arr.length - 1 && arr.length > 3)
+			name = `${person.name}, and `
+		else if (i + 1 < arr.length && arr.length === 2)
+			name = `${person.name} and `
+		else if (i + 1 < arr.length && arr.length > 2) name = `${person.name}, `
+
+		return [
+			{
+				type: 'image',
+				image_url: person.image,
+				alt_text: person.name,
+			},
+			{
+				type: 'plain_text',
+				text: name,
+			},
+		]
+	})
+	console.log(partyList)
+	return partyList
+}
+
 const updateMessage = async (
 	client: App,
 	channel: string,
-	timestamp?: string
+	timestamp?: string,
+	attendeeUpdate?: boolean
 ) => {
 	const lastRecord = await prisma.coworking.findMany({
 		select: { id: true, createdAt: true },
 		orderBy: { createdAt: 'desc' },
 		take: 1,
 	})
-	const message = {
-		channel,
-		text: timestamp ? body.end : body.start,
-		unfurl_links: false,
-		unfurl_media: false,
-		blocks: [
-			{
-				type: 'section',
+	const participantList = await attendees()
+
+	const participantBlock = [
+		{
+			type: 'context',
+			elements: [
+				{
+					type: 'mrkdwn',
+					text: '*Currently here:*',
+				},
+			],
+		},
+		{
+			type: 'context',
+			elements: participantList,
+		},
+	]
+	const baseMessage = {
+		type: 'section',
+		text: {
+			type: 'mrkdwn',
+			text: timestamp && !attendeeUpdate ? body.end : body.start,
+		},
+		accessory: {
+			type: 'button',
+			text: {
+				type: 'plain_text',
+				text: timestamp && !attendeeUpdate ? button.start : button.join,
+				emoji: true,
+			},
+			value: lastRecord[0]?.id,
+			url: `http://localhost:3000/api/zoom/join?uuid=${lastRecord[0]?.id}`,
+			action_id: 'button-action',
+			style: 'primary',
+			confirm: {
+				title: {
+					type: 'plain_text',
+					text: notice.title,
+				},
 				text: {
 					type: 'mrkdwn',
-					text: timestamp ? body.end : body.start,
+					text: notice.body,
 				},
-				accessory: {
-					type: 'button',
-					text: {
-						type: 'plain_text',
-						text: timestamp ? button.start : button.join,
-						emoji: true,
-					},
-					value: lastRecord[0]?.id,
-					// url: process.env.ZOOM_MEETING_URL,
-					url: `http://localhost:3000/api/zoom/join?uuid=${lastRecord[0]?.id}`,
-					action_id: 'button-action',
-					style: 'primary',
-					confirm: {
-						title: {
-							type: 'plain_text',
-							text: notice.title,
-						},
-						text: {
-							type: 'mrkdwn',
-							text: notice.body,
-						},
-						confirm: {
-							type: 'plain_text',
-							text: notice.confirm,
-						},
-						deny: {
-							type: 'plain_text',
-							text: notice.cancel,
-						},
-					},
+				confirm: {
+					type: 'plain_text',
+					text: notice.confirm,
+				},
+				deny: {
+					type: 'plain_text',
+					text: notice.cancel,
 				},
 			},
-		],
+		},
 	}
 
+	const message = {
+		channel,
+		text: timestamp && !attendeeUpdate ? body.end : body.start,
+		unfurl_links: false,
+		unfurl_media: false,
+		blocks:
+			participantList.length && attendeeUpdate
+				? [baseMessage, ...participantBlock]
+				: [baseMessage],
+	}
+	console.log('message to post', message)
 	const result = timestamp
 		? client.client.chat.update({ ...message, ts: timestamp })
 		: client.client.chat.postMessage(message)
@@ -101,10 +150,13 @@ const postComment = async (
 	return result
 }
 
-export const slackUpdateMessage = async (timestamps?: {
-	timestamp: string
-	timestampJr: string
-}) => {
+export const slackUpdateMessage = async (
+	timestamps?: {
+		timestamp: string
+		timestampJr: string
+	},
+	attendeeUpdate = false
+) => {
 	const { timestamp, timestampJr } = timestamps ?? {
 		timestamp: undefined,
 		timestampJr: undefined,
@@ -112,12 +164,14 @@ export const slackUpdateMessage = async (timestamps?: {
 	const inreach = await updateMessage(
 		slack,
 		process.env.SLACK_COWORKING_CHANNEL_ID,
-		timestamp
+		timestamp,
+		attendeeUpdate
 	)
 	const inreachJr = await updateMessage(
 		slackJr,
 		process.env.SLACKJR_COWORKING_CHANNEL_ID,
-		timestampJr
+		timestampJr,
+		attendeeUpdate
 	)
 	console.info(`Messages posted/updated: 
 	InReach: ${inreach.ok}

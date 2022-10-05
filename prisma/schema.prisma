@@ -101,6 +101,17 @@ model Coworking {
   createdAt         DateTime? @default(now())
 }
 
+model CoworkingAttendee {
+  id         String  @id @default(auto()) @map("_id") @db.ObjectId
+  slackId    String  @unique
+  slackOrgId String?
+  name       String
+  image      String?
+
+  endTime   DateTime?
+  createdAt DateTime? @default(now())
+}
+
 model AppInstalls {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   service   String

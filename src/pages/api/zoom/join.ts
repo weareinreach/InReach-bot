@@ -1,6 +1,4 @@
-import { ConsoleLogger } from '@slack/logger'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { prisma } from 'util/prisma'
 import { createInvite } from 'src/bots/zoom'
 import { redis } from 'util/redis'
 
