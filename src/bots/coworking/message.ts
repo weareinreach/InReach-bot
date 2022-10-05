@@ -3,6 +3,7 @@ import type { ZoomReqBody } from 'src/pages/api/zoom'
 import { slack } from 'src/pages/api/slack/[[...route]]'
 import { slackJr } from 'src/pages/api/slackjr/[[...route]]'
 import { prisma } from 'util/prisma'
+import { logger } from 'util/logger'
 
 const body = {
 	start: 'A new Co-Working Session has Started!',
@@ -45,7 +46,6 @@ const attendees = async () => {
 			},
 		]
 	})
-	console.log(partyList)
 	return partyList
 }
 
@@ -128,7 +128,7 @@ const updateMessage = async (
 				? [baseMessage, ...participantBlock]
 				: [baseMessage],
 	}
-	console.log('message to post', message)
+	logger.info('message to post', message)
 	const result = timestamp
 		? client.client.chat.update({ ...message, ts: timestamp })
 		: client.client.chat.postMessage(message)
@@ -176,7 +176,7 @@ export const slackUpdateMessage = async (
 		timestampJr,
 		attendeeUpdate
 	)
-	console.info(`Messages posted/updated: 
+	logger.info(`Messages posted/updated: 
 	InReach: ${inreach.ok}
 	JrBoard: ${inreachJr.ok}`)
 	return { inreach, inreachJr }

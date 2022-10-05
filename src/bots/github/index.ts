@@ -1,6 +1,7 @@
 import { Probot } from 'probot'
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from 'octokit'
+import { logger } from 'util/logger'
 
 /* Creating a new Octokit client with the appId, privateKey, and installationId. */
 export const githubClient = new Octokit({
@@ -23,8 +24,8 @@ export const githubBot = (app: Probot) => {
 		// await context.octokit.issues.createComment(issueComment)
 	})
 	app.on('issues.edited', async (context) => {
-		console.log('issue edited')
-		console.log(context.payload.changes)
+		logger.info('issue edited')
+		logger.info(context.payload.changes)
 	})
 	// For more information on building apps:
 	// https://probot.github.io/docs/

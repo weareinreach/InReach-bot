@@ -3,6 +3,7 @@ import { App, LogLevel } from '@slack/bolt'
 import { prismaConvoStore } from 'src/bots/slackUtil/convoStore'
 import { slackJrBot } from 'src/bots/slackJr'
 import { NextApiRequest, NextApiResponse } from 'next'
+import { logger } from 'util/logger'
 
 const slackJrReceiver = new NextConnectReceiver({
 	signingSecret: process.env.SLACKJR_SIGNING_SECRET || 'invalid',
@@ -23,16 +24,16 @@ export const slackJr = new App({
 	// 	process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
 	logger: {
 		debug: (...msgs) => {
-			console.log('InReachBotJr debug: ' + JSON.stringify(msgs, null, 2))
+			logger.debug('InReachBotJr:', msgs)
 		},
 		info: (...msgs) => {
-			console.info('InReachBotJr info: ' + JSON.stringify(msgs, null, 2))
+			logger.info('InReachBotJr:', msgs)
 		},
 		warn: (...msgs) => {
-			console.warn('InReachBotJr warn: ' + JSON.stringify(msgs, null, 2))
+			logger.warn('InReachBotJr:', msgs)
 		},
 		error: (...msgs) => {
-			console.error('InReachBotJr error: ' + JSON.stringify(msgs, null, 2))
+			logger.error('InReachBotJr:', msgs)
 		},
 		setLevel: (level) => {
 			level = loglevel

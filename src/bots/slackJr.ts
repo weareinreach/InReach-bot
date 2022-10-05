@@ -1,9 +1,10 @@
 import { App, ButtonAction } from '@slack/bolt'
+import { logger } from 'util/logger'
 import { storeUser, storeAttendee } from './slackUtil/redis'
 
 export const slackJrBot = (app: App) => {
 	app.use(async ({ payload, next }) => {
-		console.log('InReachBotJr', payload)
+		logger.info('InReachBotJr', payload)
 		await next()
 	})
 	app.action('button-action', async (params) => {
@@ -22,7 +23,7 @@ export const slackJrBot = (app: App) => {
 		})
 	})
 	app.event('app_home_opened', async ({ event, client }) => {
-		console.log('app home opened', event)
+		logger.info('app home opened', event)
 		await client.views.publish({
 			user_id: event.user,
 			view: {

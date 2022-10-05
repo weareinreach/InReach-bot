@@ -3,9 +3,9 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "next dev",
+		"dev": "NODE_OPTIONS='-r @newrelic/next' next dev",
 		"build": "next build",
-		"start": "next start",
+		"start": "NODE_OPTIONS='-r @newrelic/next' next start",
 		"lint": "next lint",
 		"prisma": "prisma",
 		"postinstall": "prisma generate"
@@ -34,12 +34,15 @@
 		"next-connect": "^0.13.0",
 		"nextjs-cors": "^2.1.1",
 		"octokit": "^2.0.7",
+		"pino": "^8.6.1",
+		"pino-pretty": "^9.1.1",
 		"prisma": "^4.4.0",
 		"probot": "^12.2.8",
 		"raw-body": "^2.5.1",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"tsscmp": "^1.0.6"
+		"tsscmp": "^1.0.6",
+		"winston": "^3.8.2"
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^7.5.0",

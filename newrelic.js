@@ -37,6 +37,14 @@ exports.config = {
 			enabled: true,
 		},
 	},
+	distributed_tracing: {
+		/**
+		 * Enables/disables distributed tracing.
+		 *
+		 * @env NEW_RELIC_DISTRIBUTED_TRACING_ENABLED
+		 */
+		enabled: true,
+	},
 	attributes: {
 		/**
 		 * Prefix of attributes to exclude from all destinations. Allows * as wildcard

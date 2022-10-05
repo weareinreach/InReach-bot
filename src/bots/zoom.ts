@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { logger } from 'util/logger'
 import { getUser } from './slackUtil/redis'
 
 const ZOOM_API = 'https://api.zoom.us/v2'
@@ -19,7 +20,7 @@ const getAccessToken = async () => {
 			},
 		}
 	)
-	console.log('Zoom token generated')
+	logger.info('Zoom token generated')
 	return response.data.access_token
 }
 
@@ -44,7 +45,7 @@ export const createInvite = async (userId: string, meetingId: string) => {
 			}
 		)
 		if (invite.data.attendees.length) {
-			console.info(`Created invite link for ${userId}`)
+			logger.info(`Created invite link for ${userId}`)
 			return invite.data.attendees[0]?.join_url as string
 		}
 	} catch (err) {

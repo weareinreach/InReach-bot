@@ -1,5 +1,6 @@
 // src/server/db/client.ts
 import { PrismaClient } from '@prisma/client'
+import { logger } from './logger'
 
 declare global {
 	// eslint-disable-next-line no-var
@@ -22,7 +23,7 @@ prisma.$use(async (params, next) => {
 
 	const after = Date.now()
 
-	console.log(`Query ${params.model}.${params.action} took ${after - before}ms`)
+	logger.info(`Query ${params.model}.${params.action} took ${after - before}ms`)
 
 	return result
 })
