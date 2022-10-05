@@ -13,15 +13,14 @@ const slackJrReceiver = new NextConnectReceiver({
 		actions: '/api/slackjr/actions',
 	},
 })
+const loglevel =
+	process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG
 
 export const slackJr = new App({
-	// signingSecret: process.env.SLACKJR_SIGNING_SECRET,
-	// clientId: process.env.SLACKJR_CLIENT_ID,
-	// clientSecret: process.env.SLACKJR_CLIENT_SECRET,
 	token: process.env.SLACKJR_BOT_TOKEN,
 	receiver: slackJrReceiver,
-	logLevel:
-		process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
+	// logLevel:
+	// 	process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
 	logger: {
 		debug: (...msgs) => {
 			console.log('InReachBotJr debug: ' + JSON.stringify(msgs, null, 2))
@@ -35,9 +34,10 @@ export const slackJr = new App({
 		error: (...msgs) => {
 			console.error('InReachBotJr error: ' + JSON.stringify(msgs, null, 2))
 		},
-		setLevel: (level) => {},
-		getLevel: () =>
-			process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
+		setLevel: (level) => {
+			level = loglevel
+		},
+		getLevel: () => loglevel,
 		setName: (name) => {},
 	},
 	// convoStore: new prismaConvoStore(),

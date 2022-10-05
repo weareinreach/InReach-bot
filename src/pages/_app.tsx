@@ -10,13 +10,13 @@ import {
 } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
-const ReactQueryDevtoolsProduction = React.lazy(() =>
-	import('@tanstack/react-query-devtools/build/lib/index.prod.js').then(
-		(d) => ({
-			default: d.ReactQueryDevtools,
-		})
-	)
-)
+// const ReactQueryDevtoolsProduction = React.lazy(() =>
+// 	import('@tanstack/react-query-devtools/build/lib/index.prod.js').then(
+// 		(d) => ({
+// 			default: d.ReactQueryDevtools,
+// 		})
+// 	)
+// )
 
 const MyApp: AppType<{ session: Session | null; dehydratedState: unknown }> = ({
 	Component,
@@ -39,11 +39,11 @@ const MyApp: AppType<{ session: Session | null; dehydratedState: unknown }> = ({
 					<Component {...pageProps} />
 				</Hydrate>
 				<ReactQueryDevtools initialIsOpen={false} />
-				{showDevtools && (
+				{/* {showDevtools && (
 					<React.Suspense fallback={null}>
 						<ReactQueryDevtoolsProduction />
 					</React.Suspense>
-				)}
+				)} */}
 			</QueryClientProvider>
 		</SessionProvider>
 	)

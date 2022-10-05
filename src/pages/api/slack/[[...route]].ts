@@ -7,11 +7,13 @@ const slackReceiver = new NextConnectReceiver({
 	signingSecret: process.env.SLACK_SIGNING_SECRET,
 	processBeforeResponse: true,
 })
+const loglevel =
+	process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG
 export const slack = new App({
 	token: process.env.SLACK_BOT_TOKEN,
 	receiver: slackReceiver,
-	logLevel:
-		process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
+	// logLevel:
+	// 	process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
 	logger: {
 		debug: (...msgs) => {
 			console.log('InReachBot debug: ' + JSON.stringify(msgs, null, 2))
@@ -25,9 +27,10 @@ export const slack = new App({
 		error: (...msgs) => {
 			console.error('InReachBot error: ' + JSON.stringify(msgs, null, 2))
 		},
-		setLevel: () => {},
-		getLevel: () =>
-			process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
+		setLevel: (level) => {
+			level = loglevel
+		},
+		getLevel: () => loglevel,
 		setName: (name) => {},
 	},
 	// convoStore: new prismaConvoStore(),
