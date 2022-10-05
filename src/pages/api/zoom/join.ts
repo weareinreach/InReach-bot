@@ -45,7 +45,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	url.push(`?uuid=${uuid}`)
 	url.push(`&attempt=${+attempt + 1}`)
 	console.log('delay 2 seconds')
-	await delay(2000)
+	await delay(1000)
 	console.log(`Redirecting to: ${url.join('')}`)
 	return res.redirect(url.join(''))
 }
