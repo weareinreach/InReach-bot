@@ -3,6 +3,7 @@ import { getSSRInvite } from 'src/bots/zoom'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import axios from 'axios'
+import { useEffect, useState } from 'react'
 
 const fetchUser = async (id: string) => {
 	try {
@@ -19,11 +20,25 @@ const JoinZoom = () => {
 	const { data, isError, isLoading, isSuccess } = useQuery(['coworker'], () =>
 		fetchUser(id)
 	)
-	console.log(data)
+	const [redirectTime, setRedirectTime] = useState(3)
+	useEffect(() => {
+		if (data && isSuccess) {
+			if (redirectTime == 0) {
+				router.push(data)
+				return
+			}
+
+			setTimeout(() => {
+				console.log(redirectTime)
+				setRedirectTime((redirectTime) => redirectTime - 1)
+			}, 1000)
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [redirectTime, data, isSuccess])
 
 	if (isLoading) return <div>Loading Meeting...</div>
 	if (isError) return <div>An error occurred!</div>
-	if (isSuccess) router.push(data)
+	if (isSuccess) return <div>Joining Meeting in {redirectTime} seconds...</div>
 }
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
