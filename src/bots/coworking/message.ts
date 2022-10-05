@@ -62,6 +62,9 @@ const updateMessage = async (
 	})
 	const participantList = await attendees()
 
+	const meetingEnded =
+		timestamp && (!attendeeUpdate || participantList.length === 0)
+
 	const participantBlock = [
 		{
 			type: 'context',
@@ -81,17 +84,17 @@ const updateMessage = async (
 		type: 'section',
 		text: {
 			type: 'mrkdwn',
-			text: timestamp && !attendeeUpdate ? body.end : body.start,
+			text: meetingEnded ? body.end : body.start,
 		},
 		accessory: {
 			type: 'button',
 			text: {
 				type: 'plain_text',
-				text: timestamp && !attendeeUpdate ? button.start : button.join,
+				text: meetingEnded ? button.start : button.join,
 				emoji: true,
 			},
 			value: lastRecord[0]?.id,
-			url: `http://localhost:3000/api/zoom/join?uuid=${lastRecord[0]?.id}`,
+			url: `${process.env.VERCEL_URL}/api/zoom/join?uuid=${lastRecord[0]?.id}`,
 			action_id: 'button-action',
 			style: 'primary',
 			confirm: {
@@ -117,7 +120,7 @@ const updateMessage = async (
 
 	const message = {
 		channel,
-		text: timestamp && !attendeeUpdate ? body.end : body.start,
+		text: meetingEnded ? body.end : body.start,
 		unfurl_links: false,
 		unfurl_media: false,
 		blocks:
