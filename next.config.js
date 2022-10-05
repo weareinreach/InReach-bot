@@ -1,5 +1,10 @@
 const { withSentryConfig } = require('@sentry/nextjs')
 
+if (process.env.CI.toString() !== '1') {
+	// @ts-ignore
+	import('@newrelic/next')
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
