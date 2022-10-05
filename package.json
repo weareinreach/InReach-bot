@@ -3,9 +3,9 @@
 	"version": "0.1.0",
 	"private": true,
 	"scripts": {
-		"dev": "NODE_OPTIONS='-r @newrelic/next' next dev",
+		"dev": "next dev",
 		"build": "next build",
-		"start": "NODE_OPTIONS='-r @newrelic/next' next start",
+		"start": "next start",
 		"lint": "next lint",
 		"prisma": "prisma",
 		"postinstall": "prisma generate"
@@ -15,6 +15,7 @@
 		"@next-auth/prisma-adapter": "^1.0.4",
 		"@octokit/auth-app": "^4.0.6",
 		"@prisma/client": "^4.4.0",
+		"@sentry/nextjs": "^7.14.1",
 		"@slack/bolt": "3.12.1",
 		"@slack/logger": "^3.0.0",
 		"@slack/oauth": "^2.5.4",

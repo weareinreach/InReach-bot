@@ -44,6 +44,7 @@ export const createInvite = async (userId: string, meetingId: string) => {
 			}
 		)
 		if (invite.data.attendees.length) {
+			console.info(`Created invite link for ${userId}`)
 			return invite.data.attendees[0]?.join_url as string
 		}
 	} catch (err) {

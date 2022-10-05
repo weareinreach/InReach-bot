@@ -1,7 +1,7 @@
 import { prisma } from 'util/prisma'
 import { githubClient } from '../github'
 import { DateTime } from 'luxon'
-const baseUrl = process.env.VERCEL_URL
+const baseUrl = process.env.BASE_URL
 
 const icons = {
 	draft: `${baseUrl}/issues/draft.png`,

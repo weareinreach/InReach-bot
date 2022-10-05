@@ -5,7 +5,6 @@ import { prisma } from 'util/prisma'
 
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { profileEnd } from 'console'
 
 export const authOptions: NextAuthOptions = {
 	// Include user.id on session

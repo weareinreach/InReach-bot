@@ -43,7 +43,9 @@ declare global {
 			REDIS_ENDPOINT: string
 			REDIS_PASSWORD: string
 
-			VERCEL_URL: string
+			BASE_URL: string
+
+			NEXT_PUBLIC_SENTRY_DSN: string
 		}
 	}
 }

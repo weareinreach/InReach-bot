@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
 
-const fetchUser = async (id: string) => {
+const fetchLink = async (id: string) => {
 	try {
 		const { data } = await axios.get<{ user: string }>(`/api/zoom/${id}`)
 		return data.user
@@ -17,8 +17,12 @@ const fetchUser = async (id: string) => {
 const JoinZoom = () => {
 	const router = useRouter()
 	const id = router.query.id as string
-	const { data, isError, isLoading, isSuccess } = useQuery(['coworker'], () =>
-		fetchUser(id)
+	const { data, isError, isLoading, isSuccess, error } = useQuery(
+		['coworker', id],
+		() => fetchLink(id),
+		{
+			refetchOnWindowFocus: false,
+		}
 	)
 	const [redirectTime, setRedirectTime] = useState(3)
 	useEffect(() => {
@@ -37,7 +41,10 @@ const JoinZoom = () => {
 	}, [redirectTime, data, isSuccess])
 
 	if (isLoading) return <div>Loading Meeting...</div>
-	if (isError) return <div>An error occurred!</div>
+	if (isError) {
+		console.error(error)
+		return <div>An error occurred!</div>
+	}
 	if (isSuccess) return <div>Joining Meeting in {redirectTime} seconds...</div>
 }
 
@@ -45,10 +52,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const { req, res, params } = ctx
 	const id = params?.id ?? ''
 	const queryClient = new QueryClient()
+	console.log(id)
 
 	if (!id || typeof id !== 'string') return { notFound: true }
 	// try {
-	await queryClient.prefetchQuery(['coworker'], () => getSSRInvite(id))
+	await queryClient.prefetchQuery(['coworker', id], () => getSSRInvite(id))
 	console.log(dehydrate(queryClient))
 	return {
 		props: {

@@ -20,7 +20,8 @@ export const slackJr = new App({
 	// clientSecret: process.env.SLACKJR_CLIENT_SECRET,
 	token: process.env.SLACKJR_BOT_TOKEN,
 	receiver: slackJrReceiver,
-	// logLevel: LogLevel.DEBUG,
+	logLevel:
+		process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
 	logger: {
 		debug: (...msgs) => {
 			console.log('InReachBotJr debug: ' + JSON.stringify(msgs, null, 2))

@@ -1,4 +1,3 @@
-import { getUser } from 'src/bots/slackUtil/redis'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { getSSRInvite } from 'src/bots/zoom'
 

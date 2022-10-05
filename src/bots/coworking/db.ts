@@ -71,14 +71,12 @@ export const addAttendee = async (user: CoworkAttendee) => {
 		create: {
 			slackId: user.id,
 			slackOrgId: user.org,
-			image:
-				user.profile?.image_32 ?? `${process.env.VERCEL_URL}/inreach-sm.png`,
+			image: user.profile?.image_32 ?? `${process.env.BASE_URL}/inreach-sm.png`,
 			name: user.profile!.display_name as string,
 		},
 		update: {
 			slackOrgId: user.org,
-			image:
-				user.profile?.image_32 ?? `${process.env.VERCEL_URL}/inreach-sm.png`,
+			image: user.profile?.image_32 ?? `${process.env.BASE_URL}/inreach-sm.png`,
 			name: user.profile!.display_name as string,
 		},
 	})

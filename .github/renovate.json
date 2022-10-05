@@ -1,0 +1,10 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"addLabels": ["dependencies"],
+	"assigneesFromCodeOwners": true,
+	"baseBranches": ["main"],
+	"configMigration": true,
+	"extends": ["config:base", ":preserveSemverRanges", ":rebaseStalePrs"],
+	"reviewersFromCodeOwners": true,
+	"semanticCommits": "enabled"
+}

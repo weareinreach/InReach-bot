@@ -36,3 +36,6 @@ newrelic_agent.log
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# sentry
+.sentryclirc

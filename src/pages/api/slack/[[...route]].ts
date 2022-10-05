@@ -10,7 +10,8 @@ const slackReceiver = new NextConnectReceiver({
 export const slack = new App({
 	token: process.env.SLACK_BOT_TOKEN,
 	receiver: slackReceiver,
-	// logLevel: LogLevel.DEBUG,
+	logLevel:
+		process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
 	logger: {
 		debug: (...msgs) => {
 			console.log('InReachBot debug: ' + JSON.stringify(msgs, null, 2))
@@ -24,7 +25,7 @@ export const slack = new App({
 		error: (...msgs) => {
 			console.error('InReachBot error: ' + JSON.stringify(msgs, null, 2))
 		},
-		setLevel: (level) => {},
+		setLevel: () => {},
 		getLevel: () =>
 			process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
 		setName: (name) => {},

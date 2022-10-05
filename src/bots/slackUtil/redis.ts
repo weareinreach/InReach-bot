@@ -3,7 +3,7 @@ import type { UsersProfileGetResponse } from '@slack/web-api'
 import axios from 'axios'
 
 export const storeUser = async (uuid: string, user: string) => {
-	const res = await redis.set(uuid, user, { ex: 10 })
+	const res = await redis.set(uuid, user, { ex: 15 })
 	return res
 }
 export const getUser = async (uuid: string) => {
