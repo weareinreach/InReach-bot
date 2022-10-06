@@ -1,9 +1,9 @@
 const { withSentryConfig } = require('@sentry/nextjs')
 
-if (process.env.CI !== '1') {
-	// @ts-ignore
-	require('@newrelic/next')
-}
+// if (!process.env.CI) {
+// 	// @ts-ignore
+// 	require('@newrelic/next')
+// }
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
