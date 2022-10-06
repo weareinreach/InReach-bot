@@ -57,7 +57,7 @@ const JoinZoom = () => {
 	useEffect(() => {
 		if (data && isSuccess) {
 			if (redirectTime == 0) {
-				// router.push(data)
+				router.push(data)
 				return
 			}
 
