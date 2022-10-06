@@ -25,8 +25,6 @@
 		"@upstash/redis": "^1.13.1",
 		"asana": "^1.0.0",
 		"axios": "^1.0.0",
-		"cookies-next": "^2.1.1",
-		"googleapis": "^108.0.0",
 		"luxon": "^3.0.4",
 		"newrelic": "^9.1.0",
 		"next": "12.3.1",
@@ -41,8 +39,7 @@
 		"raw-body": "^2.5.1",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"tsscmp": "^1.0.6",
-		"winston": "^3.8.2"
+		"tsscmp": "^1.0.6"
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^7.5.0",
