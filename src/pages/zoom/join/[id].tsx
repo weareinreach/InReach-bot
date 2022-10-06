@@ -24,8 +24,7 @@ const fetchLink = async (name: string) => {
 	try {
 		console.info('fetchLink fired')
 		const { data, status, statusText } = await axios.get<{ link: string }>(
-			`/api/zoom/link`,
-			{ data: { name } }
+			`/api/zoom/${encodeURIComponent(name)}`
 		)
 		console.log('fetchlink', data)
 		return data.link
