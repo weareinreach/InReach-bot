@@ -48,11 +48,11 @@ const JoinZoom = () => {
 			enabled: !!user,
 		}
 	)
-	const [redirectTime, setRedirectTime] = useState(10)
+	const [redirectTime, setRedirectTime] = useState(3)
 	useEffect(() => {
 		if (data && isSuccess) {
 			if (redirectTime == 0) {
-				// router.push(data)
+				router.push(data)
 				return
 			}
 
