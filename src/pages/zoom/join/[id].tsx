@@ -23,8 +23,13 @@ const fetchUser = async (id: string) => {
 const fetchLink = async (name: string) => {
 	try {
 		console.info('fetchLink fired')
-		const { data, status, statusText } = await axios.get<{ link: string }>(
-			`/api/zoom/${encodeURIComponent(name)}`
+		const { data, status, statusText } = await axios.post<{ link: string }>(
+			`/api/zoom/link`,
+			{
+				data: {
+					name: name,
+				},
+			}
 		)
 		console.log('fetchlink', data)
 		return data.link
@@ -52,7 +57,7 @@ const JoinZoom = () => {
 	useEffect(() => {
 		if (data && isSuccess) {
 			if (redirectTime == 0) {
-				router.push(data)
+				// router.push(data)
 				return
 			}
 

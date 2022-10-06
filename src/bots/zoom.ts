@@ -23,7 +23,7 @@ const getAccessToken = async () => {
 	return response.data.access_token
 }
 
-export const createInvite = async (userId: string, meetingId: string) => {
+export const createInvite = async (username: string, meetingId: string) => {
 	try {
 		const token = await getAccessToken()
 
@@ -32,7 +32,7 @@ export const createInvite = async (userId: string, meetingId: string) => {
 			{
 				attendees: [
 					{
-						name: userId,
+						name: username,
 					},
 				],
 				ttl: 300,
@@ -44,7 +44,7 @@ export const createInvite = async (userId: string, meetingId: string) => {
 			}
 		)
 		if (invite.data.attendees.length) {
-			console.info(`Created invite link for ${userId}`)
+			console.info(`Created invite link for ${username}`)
 			return invite.data.attendees[0]?.join_url as string
 		}
 	} catch (err) {
