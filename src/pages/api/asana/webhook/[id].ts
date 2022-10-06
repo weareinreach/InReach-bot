@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { prisma } from 'util/prisma'
 import NextCors from 'nextjs-cors'
 import { handleDetach, WebhookEvent } from 'src/bots/asana/detachIssue'
+import { createSignature, matchSignature } from 'util/crypto'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
@@ -45,15 +46,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		})
 		if (typeof secret !== 'string')
 			return res.status(404).json({ message: 'Id not found' })
-		const computedSignature = crypto
-			.createHmac('SHA256', secret)
-			.update(JSON.stringify(req.body))
-			.digest('hex')
+		const computedSignature = createSignature(secret, JSON.stringify(req.body))
 
-		const sigMatch = crypto.timingSafeEqual(
-			Buffer.from(req.headers['x-hook-signature'] as string),
-			Buffer.from(computedSignature)
+		const sigMatch = matchSignature(
+			req.headers['x-hook-signature'] as string,
+			computedSignature
 		)
+
 		console.log(`Signature Match: ${sigMatch}`)
 		if (!sigMatch) {
 			// Fail

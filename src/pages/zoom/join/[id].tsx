@@ -1,27 +1,51 @@
 import { dehydrate, QueryClient, useQuery } from '@tanstack/react-query'
-import { getSSRInvite } from 'src/bots/zoom'
 import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
+import { getUser } from 'src/bots/slackUtil/redis'
+import { createSignature, matchSignature } from 'util/crypto'
 
-const fetchLink = async (id: string) => {
+const fetchUser = async (id: string) => {
 	try {
-		const { data } = await axios.get<{ user: string }>(`/api/zoom/${id}`)
+		console.info('fetchUser fired')
+		const { data } = await axios.get<{ user: string }>(
+			`/api/util/user/get/${id}`
+		)
+		console.log('fetchuser', data)
 		return data.user
 	} catch (err) {
+		console.error(err)
 		throw err
+	}
+}
+
+const fetchLink = async (name: string) => {
+	try {
+		console.info('fetchLink fired')
+		const { data, status, statusText } = await axios.get<{ link: string }>(
+			`/api/zoom/${name}`
+		)
+		console.log('fetchlink', data)
+		return data.link
+	} catch (err) {
+		throw new Error(typeof err === 'string' ? err : JSON.stringify(err))
 	}
 }
 
 const JoinZoom = () => {
 	const router = useRouter()
 	const id = router.query.id as string
+	const { data: user } = useQuery(['coworker', id], () => fetchUser(id), {
+		refetchOnWindowFocus: false,
+	})
+
 	const { data, isError, isLoading, isSuccess, error } = useQuery(
-		['coworker', id],
-		() => fetchLink(id),
+		['coworker', id, 'link'],
+		() => fetchLink(user as string),
 		{
 			refetchOnWindowFocus: false,
+			enabled: !!user,
 		}
 	)
 	const [redirectTime, setRedirectTime] = useState(3)
@@ -43,7 +67,11 @@ const JoinZoom = () => {
 	if (isLoading) return <div>Loading Meeting...</div>
 	if (isError) {
 		console.error(error)
-		return <div>An error occurred!</div>
+		return (
+			<>
+				<div>An error occurred!</div>
+			</>
+		)
 	}
 	if (isSuccess) return <div>Joining Meeting in {redirectTime} seconds...</div>
 }
@@ -52,24 +80,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const { req, res, params } = ctx
 	const id = params?.id ?? ''
 	const queryClient = new QueryClient()
-	console.log(id)
 
 	if (!id || typeof id !== 'string') return { notFound: true }
-	// try {
-	await queryClient.prefetchQuery(['coworker', id], () => getSSRInvite(id))
-	console.log(dehydrate(queryClient))
+
+	await queryClient.prefetchQuery(['coworker', id], () => getUser(id), {
+		staleTime: 10 * 1000,
+	})
+
 	return {
 		props: {
 			dehydratedState: dehydrate(queryClient),
 		},
 	}
-	// } catch (err) {
-	// 	return {
-	// 		props: {
-	// 			error: err,
-	// 		},
-	// 	}
-	// }
 }
 
 export default JoinZoom
