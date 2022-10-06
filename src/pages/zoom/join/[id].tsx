@@ -4,14 +4,12 @@ import { GetServerSideProps } from 'next'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { useEffect, useState } from 'react'
-import { logger } from 'util/logger'
 
 const fetchLink = async (id: string) => {
 	try {
 		const { data } = await axios.get<{ user: string }>(`/api/zoom/${id}`)
 		return data.user
 	} catch (err) {
-		logger.error(err)
 		throw err
 	}
 }
@@ -35,6 +33,7 @@ const JoinZoom = () => {
 			}
 
 			setTimeout(() => {
+				console.log(redirectTime)
 				setRedirectTime((redirectTime) => redirectTime - 1)
 			}, 1000)
 		}
@@ -43,7 +42,7 @@ const JoinZoom = () => {
 
 	if (isLoading) return <div>Loading Meeting...</div>
 	if (isError) {
-		logger.error(error)
+		console.error(error)
 		return <div>An error occurred!</div>
 	}
 	if (isSuccess) return <div>Joining Meeting in {redirectTime} seconds...</div>
@@ -53,16 +52,24 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 	const { req, res, params } = ctx
 	const id = params?.id ?? ''
 	const queryClient = new QueryClient()
+	console.log(id)
 
 	if (!id || typeof id !== 'string') return { notFound: true }
-
+	// try {
 	await queryClient.prefetchQuery(['coworker', id], () => getSSRInvite(id))
-
+	console.log(dehydrate(queryClient))
 	return {
 		props: {
 			dehydratedState: dehydrate(queryClient),
 		},
 	}
+	// } catch (err) {
+	// 	return {
+	// 		props: {
+	// 			error: err,
+	// 		},
+	// 	}
+	// }
 }
 
 export default JoinZoom

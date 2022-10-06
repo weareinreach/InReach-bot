@@ -12,7 +12,6 @@ import {
 	slackUpdateMessage,
 } from 'src/bots/coworking/message'
 import { getAttendee } from 'src/bots/slackUtil/redis'
-import { logger } from 'util/logger'
 
 const EVENT_MEETING_STARTED = 'meeting.started'
 const EVENT_MEETING_ENDED = 'meeting.ended'
@@ -29,7 +28,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		.digest('hex')}`
 
 	if (zSignature !== zVerifyHash) {
-		logger.error(
+		console.error(
 			'Unauthorized',
 			JSON.stringify(req.headers, null, 2),
 			JSON.stringify(req.body, null, 2)
@@ -37,9 +36,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		return res.status(401).json({ message: 'Unauthorized' })
 	}
 	const body: ZoomReqBody = req.body
-	logger.info('Incoming webhook', req.body)
+	console.info('Incoming webhook', req.body)
 	if (req.body.payload.object.participant)
-		logger.info('Participant', req.body.payload.object.participant)
+		console.info('Participant', req.body.payload.object.participant)
 	if (body.payload.object.id === process.env.ZOOM_COWORKING_MEETING_ID) {
 		const { uuid, start_time } = body.payload.object
 
@@ -69,7 +68,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 					timestampJr: roomInstance.jrThreadTimestamp,
 					username: user_name,
 				})
-				logger.info('Comment posted:', commentResult)
+				console.info('Comment posted:', commentResult)
 				const attendeeUpdate = await slackUpdateMessage(
 					{
 						timestamp: roomInstance.threadTimestamp,
@@ -93,7 +92,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 					inreachJr.ts!,
 					start_time
 				)
-				logger.info('Room created:', newRoom)
+				console.info('Room created:', newRoom)
 				res.status(200).json(newRoom)
 				return
 				break
@@ -108,7 +107,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 					timestampJr: roomEnd.jrThreadTimestamp,
 				})
 				await endRoom(uuid, body.payload.object.end_time!)
-				logger.info('Room ended:', messageEnd)
+				console.info('Room ended:', messageEnd)
 				res.status(200).json(messageEnd)
 				return
 				break

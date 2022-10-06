@@ -27,15 +27,6 @@ const CustomErrorComponent: NextPage<ErrorProps> = (props) => {
 }
 
 CustomErrorComponent.getInitialProps = async (contextData) => {
-	const { res, err } = contextData
-	if (typeof window == 'undefined') {
-		const newrelic = require('newrelic')
-		newrelic.noticeError(err)
-	} else {
-		// @ts-ignore
-		window.newrelic.noticeError(err)
-	}
-
 	// In case this is running in a serverless function, await this in order to give Sentry
 	// time to send the error before the lambda exits
 	await Sentry.captureUnderscoreErrorException(contextData)

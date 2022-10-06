@@ -2,16 +2,15 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { probot } from '../../github'
 import NextCors from 'nextjs-cors'
 import { attachIssue } from 'src/bots/asana/attachIssue'
-import { logger } from 'util/logger'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
 	const gh = await probot.auth(parseInt(process.env.GITHUB_INSTALL_ID))
-	logger.info(req.body)
+	console.log(req.body)
 	const data: IssueSubmission = JSON.parse(req.body.data)
-	logger.info(data)
+	console.log(data)
 	const [org, repo] = data.values.repo.split('/')
 
 	const labels = [data.values.labelsPriority, data.values.labelsType].filter(
@@ -28,7 +27,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		labels: labels,
 	})
 
-	logger.info(await newIssue)
+	console.log(await newIssue)
 	const attachedIssue = await attachIssue({
 		owner: org as string,
 		repo: repo as string,

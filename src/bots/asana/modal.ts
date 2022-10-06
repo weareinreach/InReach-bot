@@ -95,6 +95,7 @@ export const attachModal = async (repo?: string) => {
 			width: 'full',
 		})
 
+	// console.log(modalFields)
 	return {
 		template: 'form_metadata_v0',
 		metadata: {

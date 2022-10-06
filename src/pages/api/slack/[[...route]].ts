@@ -2,7 +2,6 @@ import NextConnectReceiver from 'util/NextConnectReciever'
 import { App, LogLevel } from '@slack/bolt'
 import { slackBot } from 'src/bots/slack'
 import { prismaConvoStore } from 'src/bots/slackUtil/convoStore'
-import { logger } from 'util/logger'
 
 const slackReceiver = new NextConnectReceiver({
 	signingSecret: process.env.SLACK_SIGNING_SECRET,
@@ -17,16 +16,16 @@ export const slack = new App({
 	// 	process.env.NODE_ENV === 'production' ? LogLevel.ERROR : LogLevel.DEBUG,
 	logger: {
 		debug: (...msgs) => {
-			logger.debug('InReachBot: ', msgs)
+			console.log('InReachBot debug: ' + JSON.stringify(msgs, null, 2))
 		},
 		info: (...msgs) => {
-			logger.info('InReachBot: ', msgs)
+			console.info('InReachBot info: ' + JSON.stringify(msgs, null, 2))
 		},
 		warn: (...msgs) => {
-			logger.warn('InReachBot: ', msgs)
+			console.warn('InReachBot warn: ' + JSON.stringify(msgs, null, 2))
 		},
 		error: (...msgs) => {
-			logger.error('InReachBot: ', msgs)
+			console.error('InReachBot error: ' + JSON.stringify(msgs, null, 2))
 		},
 		setLevel: (level) => {
 			level = loglevel
