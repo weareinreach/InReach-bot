@@ -37,7 +37,8 @@
 		"raw-body": "^2.5.1",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
-		"tsscmp": "^1.0.6"
+		"tsscmp": "^1.0.6",
+		"uuid": "^9.0.0"
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^7.5.0",
@@ -47,6 +48,7 @@
 		"@types/react": "18.0.21",
 		"@types/react-dom": "18.0.6",
 		"@types/tsscmp": "^1.0.0",
+		"@types/uuid": "^8.3.4",
 		"dotenv": "^16.0.3",
 		"eslint": "8.24.0",
 		"eslint-config-next": "12.3.1",

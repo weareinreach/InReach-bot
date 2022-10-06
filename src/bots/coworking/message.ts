@@ -3,6 +3,7 @@ import type { ZoomReqBody } from 'src/pages/api/zoom'
 import { slack } from 'src/pages/api/slack/[[...route]]'
 import { slackJr } from 'src/pages/api/slackjr/[[...route]]'
 import { prisma } from 'util/prisma'
+import { v4 as uuidv4 } from 'uuid'
 
 const body = {
 	start: 'A new Co-Working Session has Started!',
@@ -55,11 +56,7 @@ const updateMessage = async (
 	timestamp?: string,
 	attendeeUpdate?: boolean
 ) => {
-	const lastRecord = await prisma.coworking.findMany({
-		select: { id: true, createdAt: true },
-		orderBy: { createdAt: 'desc' },
-		take: 1,
-	})
+	const uniqueId = uuidv4()
 	const participantList = await attendees()
 
 	const meetingEnded =
@@ -93,8 +90,8 @@ const updateMessage = async (
 				text: meetingEnded ? button.start : button.join,
 				emoji: true,
 			},
-			value: lastRecord[0]?.id,
-			url: `${process.env.BASE_URL}/zoom/join/${lastRecord[0]?.id}`,
+			value: uniqueId,
+			url: `${process.env.BASE_URL}/zoom/join/${uniqueId}`,
 			action_id: 'button-action',
 			style: 'primary',
 			confirm: {

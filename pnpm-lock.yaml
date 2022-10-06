@@ -19,6 +19,7 @@ specifiers:
   '@types/react': 18.0.21
   '@types/react-dom': 18.0.6
   '@types/tsscmp': ^1.0.0
+  '@types/uuid': ^8.3.4
   '@upstash/redis': ^1.13.1
   asana: ^1.0.0
   axios: ^1.0.0
@@ -40,6 +41,7 @@ specifiers:
   ts-node: ^10.9.1
   tsscmp: ^1.0.6
   typescript: 4.8.4
+  uuid: ^9.0.0
 
 dependencies:
   '@newrelic/next': 0.3.0_newrelic@9.1.0
@@ -69,6 +71,7 @@ dependencies:
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   tsscmp: 1.0.6
+  uuid: 9.0.0
 
 devDependencies:
   '@faker-js/faker': 7.5.0
@@ -78,6 +81,7 @@ devDependencies:
   '@types/react': 18.0.21
   '@types/react-dom': 18.0.6
   '@types/tsscmp': 1.0.0
+  '@types/uuid': 8.3.4
   dotenv: 16.0.3
   eslint: 8.24.0
   eslint-config-next: 12.3.1_ypn2ylkkyfa5i233caldtndbqa
@@ -1455,6 +1459,10 @@ packages:
 
   /@types/tsscmp/1.0.0:
     resolution: {integrity: sha512-rj18XR6c4Ohds86Lq8MI1NMRrXes4eLo4H06e5bJyKucE1rXGsfBBbFGD2oDC+DSufQCpnU3TTW7QAiwLx+7Yw==}
+
+  /@types/uuid/8.3.4:
+    resolution: {integrity: sha512-c/I8ZRb51j+pYGAu5CrFMRxqZ2ke4y2grEBO5AUjgSkSk+qT2Ea+OdWElz/OiMf5MNpn2b17kuVBwZLQJXzihw==}
+    dev: true
 
   /@types/ws/7.4.7:
     resolution: {integrity: sha512-JQbbmxZTZehdc2iszGKs5oC3NFnjeay7mtAWrdt7qNtAVK0g19muApzAy4bm9byz79xa2ZnO/BOBC2R8RC5Lww==}
@@ -5149,6 +5157,11 @@ packages:
 
   /uuid/8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    hasBin: true
+    dev: false
+
+  /uuid/9.0.0:
+    resolution: {integrity: sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==}
     hasBin: true
     dev: false
 

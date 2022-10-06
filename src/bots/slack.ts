@@ -16,7 +16,7 @@ export const slackBot = (app: App) => {
 		/* It's a debugging statement. */
 		const uuid = payload.value
 		const user = await client.users.profile.get({ user: body.user.id })
-		storeUser(uuid, user.profile?.display_name as string)
+		await storeUser(uuid, user.profile?.display_name as string)
 		await storeAttendee(user.profile?.display_name as string, {
 			id: body.user.id,
 			org: body.team!.id,
