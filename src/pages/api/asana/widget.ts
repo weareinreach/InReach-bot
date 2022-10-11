@@ -1,6 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
-import { asanaClient } from 'src/bots/asana'
 import { createWidget } from 'src/bots/asana/createWidget'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {

@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import crypto from 'crypto'
 import { prisma } from 'util/prisma'
 import NextCors from 'nextjs-cors'
 import { handleDetach, WebhookEvent } from 'src/bots/asana/detachIssue'

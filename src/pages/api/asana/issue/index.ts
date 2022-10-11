@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { probot } from '../../github'
 import NextCors from 'nextjs-cors'
 import { firstModal } from 'src/bots/asana/modal'
 
