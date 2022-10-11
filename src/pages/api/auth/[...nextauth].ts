@@ -12,6 +12,7 @@ export const authOptions: NextAuthOptions = {
 		session({ session, user }) {
 			if (session.user) {
 				session.user.id = user.id
+				session.user.admin = user.admin as boolean
 			}
 			return session
 		},
@@ -38,7 +39,7 @@ export const authOptions: NextAuthOptions = {
 			authorization: { params: { scope: 'openid email profile default' } },
 			idToken: true,
 			checks: ['state'],
-			profile(profile) {
+			profile(profile: AsanaProfile) {
 				return {
 					id: profile.sub,
 					name: profile.name,
@@ -48,6 +49,13 @@ export const authOptions: NextAuthOptions = {
 			},
 		},
 	],
+}
+
+type AsanaProfile = {
+	sub: string
+	name: string
+	email: string
+	picture: string
 }
 
 export default NextAuth(authOptions)

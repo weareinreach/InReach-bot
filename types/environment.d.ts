@@ -46,6 +46,8 @@ declare global {
 			BASE_URL: string
 
 			NEXT_PUBLIC_SENTRY_DSN: string
+
+			ASANA_WORKSPACE: string
 		}
 	}
 }

@@ -1,6 +1,7 @@
 import { Probot } from 'probot'
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from 'octokit'
+import { createAsanaTask } from './createAsanaTask'
 
 /* Creating a new Octokit client with the appId, privateKey, and installationId. */
 export const githubClient = new Octokit({
@@ -17,10 +18,7 @@ export const githubClient = new Octokit({
 
 export const githubBot = (app: Probot) => {
 	app.on('issues.opened', async (context) => {
-		const issueComment = context.issue({
-			body: 'Thanks for opening this issue!',
-		})
-		// await context.octokit.issues.createComment(issueComment)
+		const task = createAsanaTask(context.payload)
 	})
 	app.on('issues.edited', async (context) => {
 		console.log('issue edited')
