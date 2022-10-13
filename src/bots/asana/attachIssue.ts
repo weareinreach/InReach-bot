@@ -1,12 +1,21 @@
 import { prisma } from 'util/prisma'
 import { githubClient } from '../github'
 
+export const bodyBlock = (
+	body: string | null | undefined,
+	task: string | number
+) =>
+	`${
+		body ?? ''
+	}\n\n<!--Asana:${task}-->\n\n***\n\n#### Asana Ticket\n\n> [Asana-${task}](https://app.asana.com/0/0/${task})\n<!--/Asana-->`
+
 /**
- * It takes in a bunch of props, and then it creates a new record in the database, and then it updates
- * the body of the issue with the asana ticket number
- * @param {AttachIssueProps} props - AttachIssueProps
+ * It takes in a bunch of props, gets the issue from github, creates a new record in the database,
+ * updates the body of the issue with the asana ticket number, and returns the title of the issue and
+ * the attached issue
+ * @returns The title of the issue and the attached issue.
  */
-export const attachIssue = async (props: AttachIssueProps) => {
+export const attachIssueToGH = async (props: AttachIssueProps) => {
 	const {
 		owner,
 		repo,
@@ -14,7 +23,6 @@ export const attachIssue = async (props: AttachIssueProps) => {
 		asana_ticket,
 		asana_workspace,
 		attachment,
-		user,
 	} = props
 
 	/* Getting the issue from github. */
@@ -48,11 +56,7 @@ export const attachIssue = async (props: AttachIssueProps) => {
 
 	/* Updating the body of the issue with the asana ticket number. */
 
-	const bodyUpdate = `${ghIssue.body ?? ''} 
-<!--Asana:${asana_ticket}--> 
-Asana Task: [${asana_ticket}](https://app.asana.com/0/${asana_workspace}/${asana_ticket}) 
-<!--/Asana-->
-`
+	const bodyUpdate = bodyBlock(ghIssue.body, asana_ticket)
 	await githubClient.rest.issues.update({
 		owner,
 		repo,
@@ -67,11 +71,16 @@ Asana Task: [${asana_ticket}](https://app.asana.com/0/${asana_workspace}/${asana
 }
 
 interface AttachIssueProps {
+	/** GitHub Owner/Org */
 	owner: string
+	/** GitHub repository name */
 	repo: string
+	/** GitHub Issue number */
 	issue_number: number
-	asana_ticket: number
-	asana_workspace: number
-	attachment: number
-	user: number
+	/** Asana Ticket number */
+	asana_ticket: number | string
+	/** Asana Workspace ID */
+	asana_workspace: number | string
+	/** Asana Attachment ID */
+	attachment: number | string
 }

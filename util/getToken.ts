@@ -3,6 +3,11 @@ import axios from 'axios'
 import { baseUrl } from './baseUrl'
 import { DateTime } from 'luxon'
 
+/**
+ * It gets the token from the database, checks if it's expired, and if it is, it refreshes it
+ * @param userId - The user's ID from the provider.
+ * @returns The access token for the user
+ */
 export const getToken = async (userId: string) => {
 	const token = await prisma.account.findFirst({
 		where: {

@@ -10,6 +10,7 @@ const getBaseUrl = () => {
 	return `http://localhost:${process.env.PORT ?? 3000}` // dev SSR should use localhost
 }
 
+/* Creating a TRPC client that will be used to make requests to the server. */
 export const trpc = createTRPCNext<AppRouter>({
 	config() {
 		return {

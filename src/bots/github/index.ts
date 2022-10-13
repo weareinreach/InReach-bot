@@ -2,8 +2,10 @@ import { Probot } from 'probot'
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from 'octokit'
 import { createAsanaTask } from './createAsanaTask'
+import { isWatchedRepo } from './isWatchedRepo'
+import { asanaBlockRegex } from 'util/regex'
 
-/* Creating a new Octokit client with the appId, privateKey, and installationId. */
+/* It's creating a new Octokit client that uses the GitHub App's private key to authenticate. */
 export const githubClient = new Octokit({
 	authStrategy: createAppAuth,
 	auth: {
@@ -16,17 +18,33 @@ export const githubClient = new Octokit({
 	},
 })
 
+/**
+ * `githubBot` is a function that takes a Probot app as an argument and returns a function that listens
+ * for events and acts based on the event.
+ * @param app - Probot - This is the Probot app that we're using to create our GitHub bot.
+ */
 export const githubBot = (app: Probot) => {
+	/* When an issue is opened, create an Asana ticket, if it's a watched Repo and a ticket has not already been created. */
 	app.on('issues.opened', async (context) => {
+		if (
+			!isWatchedRepo(
+				context.payload.repository.owner.login,
+				context.payload.repository.name
+			)
+		) {
+			return
+		}
+		if (asanaBlockRegex.test(context.payload.issue.body ?? '')) {
+			return
+		}
+
 		const task = createAsanaTask(context.payload)
+		return task
 	})
+
+	/* Do something with edited issues. */
 	app.on('issues.edited', async (context) => {
 		console.log('issue edited')
 		console.log(context.payload.changes)
 	})
-	// For more information on building apps:
-	// https://probot.github.io/docs/
-
-	// To get your app running against GitHub, see:
-	// https://probot.github.io/docs/development/
 }

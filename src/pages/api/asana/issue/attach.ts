@@ -1,11 +1,14 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
-import { attachIssue } from 'src/bots/asana/attachIssue'
+import { attachIssueToGH } from 'src/bots/asana/attachIssue'
+import { verifySignature } from 'util/crypto'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
+
+	verifySignature({ service: 'asana', req, res })
 
 	const submission: IssueSubmission = JSON.parse(req.body.data)
 
@@ -20,13 +23,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	)
 		return res.status(400).end()
 
-	const attachedIssue = await attachIssue({
+	const attachedIssue = await attachIssueToGH({
 		owner,
 		repo,
 		issue_number: parseInt(issue),
 		asana_ticket: submission.task,
 		asana_workspace: submission.workspace,
-		user: submission.user,
 		attachment: submission.attachment,
 	})
 	res.status(200).json({
