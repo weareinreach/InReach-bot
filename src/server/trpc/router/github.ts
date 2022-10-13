@@ -3,7 +3,7 @@ import { z } from 'zod'
 import ObjectID from 'bson-objectid'
 
 export const githubRouter = router({
-	getRepos: protectedProcedure.query(async ({ ctx }) => {
+	getActiveRepos: protectedProcedure.query(async ({ ctx }) => {
 		return await ctx.prisma.activeRepo.findMany({
 			include: {
 				org: true,

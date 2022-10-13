@@ -153,10 +153,12 @@ model ActiveOrg {
 }
 
 model ActiveRepo {
-  id    String    @id @default(auto()) @map("_id") @db.ObjectId
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  repo     String
+  fullName String?
+
   org   ActiveOrg @relation(fields: [orgId], references: [id])
   orgId String    @db.ObjectId
-  repo  String
 
   asanaBoard   AsanaBoard? @relation(fields: [asanaBoardId], references: [id])
   asanaBoardId String?     @db.ObjectId
@@ -168,11 +170,15 @@ model ActiveRepo {
 }
 
 model AsanaBoard {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  boardId String @unique
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  boardId   String  @unique
+  boardName String?
 
   repos        ActiveRepo[]
-  AsanaWebhook AsanaWebhook[]
+  asanaWebhook AsanaWebhook?
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model AsanaWebhook {
@@ -181,7 +187,7 @@ model AsanaWebhook {
   token     String
 
   board   AsanaBoard @relation(fields: [boardId], references: [id])
-  boardId String     @db.ObjectId
+  boardId String     @unique @db.ObjectId
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
