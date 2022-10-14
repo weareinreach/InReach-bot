@@ -67,7 +67,7 @@ const useStyles = createStyles((theme) => ({
 		},
 	},
 	panel: {
-		backgroundColor: theme.colors.white,
+		backgroundColor: 'white',
 	},
 	repoName: {
 		textAlign: 'center',
@@ -80,6 +80,7 @@ const useStyles = createStyles((theme) => ({
 			cursor: 'pointer',
 		},
 	},
+	none: {},
 }))
 
 const Dashboard = () => {
@@ -151,7 +152,7 @@ const Dashboard = () => {
 							<Badge
 								color={webhookExists ? 'blue' : 'red'}
 								size='lg'
-								className={webhookExists ? undefined : classes.badgeHover}
+								className={webhookExists ? classes.none : classes.badgeHover}
 								onClick={
 									webhookExists
 										? undefined

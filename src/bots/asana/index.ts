@@ -23,7 +23,6 @@ const actAsUser = async () => {
 			},
 		},
 	})
-	console.info(`actAsUser result: ${data.accounts[0]?.providerAccountId}`)
 	return data.accounts[0]?.providerAccountId
 }
 
@@ -41,10 +40,16 @@ export const asanaClient = async (userToken?: string | null | undefined) => {
 		userToken = await getToken(userId)
 		if (typeof userToken !== 'string') throw 'Token error'
 	}
-	const client = asana.Client.create({
-		defaultHeaders: {
-			'Asana-Enable': 'new_user_task_lists new_project_templates',
-		},
-	}).useAccessToken(userToken)
+	// const client = asana.Client.create({
+	// 	defaultHeaders: {
+	// 		'Asana-Enable': 'new_user_task_lists new_project_templates',
+	// 	},
+	// }).useAccessToken(userToken)
+	const oauth = asana.Client.create({
+		clientId: process.env.ASANA_CLIENT_ID,
+		clientSecret: process.env.ASANA_CLIENT_SECRET,
+		redirectUri: `${process.env.NEXTAUTH_URL}/api/auth/callback/asana`,
+	})
+	const client = oauth.useOauth({ credentials: userToken })
 	return client
 }

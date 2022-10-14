@@ -1,5 +1,5 @@
 import { Prisma } from '@prisma/client'
-import { DefaultSession, User } from 'next-auth'
+import { DefaultSession, DefaultUser, User } from 'next-auth'
 
 declare module 'next-auth' {
 	/**
@@ -11,11 +11,7 @@ declare module 'next-auth' {
 			admin: boolean
 		} & DefaultSession['user']
 	}
-}
-interface User {
-	admin: boolean
-	id: string
-	name: string
-	image: string
-	email: string
+	interface User extends DefaultUser {
+		admin?: boolean
+	}
 }

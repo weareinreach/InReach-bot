@@ -2,6 +2,7 @@ import { getIssueList } from './getIssueData'
 import { prisma } from 'util/prisma'
 import type { OnChangeBody } from 'src/pages/api/asana/issue/onchange'
 import { asanaClient } from '.'
+import type { components as AsanaAppComponents } from 'types/asana-app-components'
 /**
  * It returns a radio button field with two options, one for creating a new issue and one for attaching
  * an existing issue
@@ -75,7 +76,7 @@ export const attachModal = async (repo?: string) => {
 	}
 	const issuePassthru = encodeURIComponent(JSON.stringify(issues))
 
-	const modalFields = []
+	const modalFields: ModalField[] = []
 	modalFields.push({
 		type: 'dropdown',
 		id: 'repo',
@@ -218,3 +219,15 @@ export const createIssueModal = async (taskData: OnChangeBody) => {
 		},
 	}
 }
+
+type ModalField =
+	| AsanaAppComponents['schemas']['FormField-Checkbox']
+	| AsanaAppComponents['schemas']['FormField-Date']
+	| AsanaAppComponents['schemas']['FormField-Datetime']
+	| AsanaAppComponents['schemas']['FormField-Dropdown']
+	| AsanaAppComponents['schemas']['FormField-MultiLineText']
+	| AsanaAppComponents['schemas']['FormField-RadioButton']
+	| AsanaAppComponents['schemas']['FormField-RichText']
+	| AsanaAppComponents['schemas']['FormField-SingleLineText']
+	| AsanaAppComponents['schemas']['FormField-StaticText']
+	| AsanaAppComponents['schemas']['FormField-Typeahead']

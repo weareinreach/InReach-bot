@@ -4,7 +4,7 @@ import { Octokit } from 'octokit'
 import { createAsanaTask } from './createAsanaTask'
 import { isWatchedRepo } from './isWatchedRepo'
 import { asanaBlockRegex } from 'util/regex'
-import { labelActions } from './labelActions'
+import { labelActions } from './actions/label'
 
 /* It's creating a new Octokit client that uses the GitHub App's private key to authenticate. */
 export const githubClient = new Octokit({

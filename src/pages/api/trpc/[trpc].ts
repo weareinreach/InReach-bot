@@ -2,6 +2,7 @@
 import { createNextApiHandler } from '@trpc/server/adapters/next'
 import { appRouter } from '../../../server/trpc/router'
 import { createContext } from '../../../server/trpc/context'
+import { captureException } from '@sentry/nextjs'
 
 // export API handler
 export default createNextApiHandler({
@@ -12,5 +13,5 @@ export default createNextApiHandler({
 			? ({ path, error }) => {
 					console.error(`❌ tRPC failed on ${path}: ${error}`)
 			  }
-			: undefined,
+			: ({ error }) => captureException(error),
 })

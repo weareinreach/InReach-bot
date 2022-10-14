@@ -176,6 +176,8 @@ model AsanaBoard {
 
   repos        ActiveRepo[]
   asanaWebhook AsanaWebhook?
+  sections     AsanaSection[]
+  customFields AsanaCustomField[]
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -188,6 +190,42 @@ model AsanaWebhook {
 
   board   AsanaBoard @relation(fields: [boardId], references: [id])
   boardId String     @unique @db.ObjectId
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model AsanaLabel {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  gid     String
+  ghId    Int     @unique
+  name    String
+  color   String
+  enabled Boolean
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@unique([gid, ghId])
+}
+
+model AsanaSection {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  board   AsanaBoard @relation(fields: [boardId], references: [id])
+  boardId String     @db.ObjectId
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model AsanaCustomField {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  board   AsanaBoard @relation(fields: [boardId], references: [id])
+  boardId String     @db.ObjectId
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt

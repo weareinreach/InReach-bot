@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-nocheck
 import { NextApiRequest, NextApiResponse } from 'next'
 import nc, { RequestHandler, NextHandler } from 'next-connect'
 import rawBody from 'raw-body'

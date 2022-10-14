@@ -47,14 +47,11 @@ export const createAsanaTask = async (payload: IssuesOpenedEvent) => {
 			name: payload.issue.title,
 			notes: payload.issue.body ?? undefined,
 			workspace: asanaWorkspace,
+			external: {
+				gid: 'github',
+				data: payload.issue.id.toString(),
+			},
 			projects: [asanaBoard],
-		})
-		console.log('asana task result', asanaTask)
-		console.log('asana attach payload', {
-			name: payload.issue.title,
-			parent: asanaTask.gid,
-			resource_subtype: 'external',
-			url: payload.issue.html_url,
 		})
 		const attachedIssue: AttachResponse = await asana.dispatcher.post(
 			'/attachments',
