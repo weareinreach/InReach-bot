@@ -17,6 +17,7 @@ export const getToken = async (userId: string) => {
 	if (token?.expires_at && DateTime.now().toSeconds() > token.expires_at) {
 		switch (token.provider) {
 			case 'asana':
+				console.log('Refreshing Asana token...')
 				const asanaRequest = await axios.post<AsanaResponse>(
 					'https://app.asana.com/-/oauth_token',
 					{},

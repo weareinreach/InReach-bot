@@ -4,6 +4,7 @@ import { Octokit } from 'octokit'
 import { createAsanaTask } from './createAsanaTask'
 import { isWatchedRepo } from './isWatchedRepo'
 import { asanaBlockRegex } from 'util/regex'
+import { labelActions } from './labelActions'
 
 /* It's creating a new Octokit client that uses the GitHub App's private key to authenticate. */
 export const githubClient = new Octokit({
@@ -42,9 +43,17 @@ export const githubBot = (app: Probot) => {
 		return task
 	})
 
-	/* Do something with edited issues. */
 	app.on('issues.edited', async (context) => {
-		console.log('issue edited')
-		console.log(context.payload.changes)
+		/* Do something with edited issues. */
+		console.dir('issue edited', context.payload.changes)
+	})
+
+	app.on('label', async (context) => {
+		console.group('label event')
+		console.dir(context.payload)
+		const label = labelActions(context.payload)
+		console.dir(label)
+		console.groupEnd()
+		return label
 	})
 }

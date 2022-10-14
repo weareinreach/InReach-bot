@@ -1,4 +1,4 @@
-import { getIssueList, getIssuesFromGH } from './getIssueData'
+import { getIssueList } from './getIssueData'
 import { prisma } from 'util/prisma'
 import type { OnChangeBody } from 'src/pages/api/asana/issue/onchange'
 import { asanaClient } from '.'
