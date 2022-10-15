@@ -11,9 +11,14 @@ export const githubIssueRegex =
 	/http[s]?:\/\/[.*\.]?github.com\/[a-z-0-9]*\/[a-z0-9-_.]*\/issues\/\d+/gi
 
 export const htmlRegex = {
+	/* A regex that matches HTML comments. */
 	comment: /(<!--.*-->\n?)/gi,
+	/* It's a regex that matches HTML paragraph tags. */
 	paragraph: /(<\/?p>)/gi,
+	/* It's a regex that matches HTML comments, paragraph tags, and pre tags. */
 	strip: /(<!--.*-->\n?)|(<\/?p>)|(<\/?pre>)/gi,
+	/* It's a regex that matches HTML heading tags. */
 	heading: /(<\/?)h\d{1}(>)/gi,
+	/* It's a regex that matches HTML image tags. */
 	image: /(?:<img .*src=")(http[^"]*)(?:.*\/>)/gi,
 }

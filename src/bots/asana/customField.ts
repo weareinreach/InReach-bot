@@ -47,7 +47,7 @@ export const batchCreateAsanaEnum: BatchAsanaEnumCreate = async (props) => {
 		const { fieldGid = ghLabelFieldGid, color, name, enabled = true } = task
 		return {
 			data: { color, name },
-			method: 'post',
+			method: 'post' as const,
 			relativePath: `/custom_fields/${fieldGid}/enum_options`,
 		}
 	})
