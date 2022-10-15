@@ -1,6 +1,7 @@
 {
 	"extends": "@tsconfig/next/tsconfig.json",
 	"compilerOptions": {
+		"target": "ES2016",
 		"noUncheckedIndexedAccess": true,
 		"baseUrl": ".",
 		"strictNullChecks": true,

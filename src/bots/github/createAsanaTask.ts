@@ -3,7 +3,14 @@ import { prisma } from 'util/prisma'
 import type { IssuesOpenedEvent } from '@octokit/webhooks-types'
 import invariant from 'tiny-invariant'
 import { attachIssueToGH } from '../asana/attachIssue'
-import { extractTaskFromBlock, githubIssueRegex } from 'util/regex'
+import { extractTaskFromBlock, githubIssueRegex, htmlRegex } from 'util/regex'
+import {
+	getAsanaGhLabelsEnum,
+	ghLabelFieldGid,
+	sourceGitHubField,
+} from '../asana/customField'
+import type { components as AsanaAPI } from 'types/asana-api'
+import showdown from 'showdown'
 
 const asanaWorkspace = process.env.ASANA_WORKSPACE
 
@@ -43,16 +50,64 @@ export const createAsanaTask = async (payload: IssuesOpenedEvent) => {
 
 		const asanaBoard = asanaProject.asanaBoard.boardId
 
-		const asanaTask = await asana.tasks.create({
+		let asanaLabels: AsanaAPI['schemas']['EnumOption'][] = []
+		const custom_fields: Record<string, string | string[]> = {
+			[sourceGitHubField.fieldGid]: sourceGitHubField.optGid,
+		}
+		if (payload.issue?.labels?.length) {
+			asanaLabels = await getAsanaGhLabelsEnum()
+			const labels = payload.issue.labels.map((label) => {
+				try {
+					const result = asanaLabels.find((item) => item.name === label.name)
+					invariant(result?.gid, 'Label not found')
+					return result.gid.toString()
+				} catch (err) {
+					console.log(err)
+				}
+			})
+			const filteredLabels = labels.filter((x) => x)
+			custom_fields[ghLabelFieldGid] =
+				filteredLabels.length === 1
+					? (filteredLabels[0] as string)
+					: (filteredLabels as string[])
+		}
+		let taskBody: string | undefined = undefined
+		let extractedImages: Array<string | undefined> = []
+		if (payload.issue.body) {
+			const convert = new showdown.Converter({
+				emoji: true,
+				ghCodeBlocks: true,
+				ghCompatibleHeaderId: true,
+				ghMentions: true,
+				requireSpaceBeforeHeadingText: true,
+				strikethrough: true,
+				underline: true,
+				noHeaderId: true,
+			})
+			// convert.setFlavor('github')
+			// convert.setOption('tasklists', false)
+			taskBody = `<body>${convert.makeHtml(payload.issue.body)}</body>`
+			const images = taskBody.matchAll(htmlRegex.image)
+			for (let image of images) extractedImages.push(image[1])
+			console.log(JSON.stringify(extractedImages, null, 2))
+			taskBody = taskBody
+				.replace(htmlRegex.strip, '')
+				.replace(htmlRegex.heading, '$1strong$2')
+				.replace(htmlRegex.image, '*IMAGE PLACEHOLDER - SEE ATTACHMENTS*')
+		}
+		console.log(taskBody)
+		const { data: asanaTask } = await asana.dispatcher.post('/tasks', {
 			name: payload.issue.title,
-			notes: payload.issue.body ?? undefined,
+			html_notes: `${taskBody}`,
 			workspace: asanaWorkspace,
 			external: {
-				gid: 'github',
+				gid: payload.issue.id.toString(),
 				data: payload.issue.id.toString(),
 			},
 			projects: [asanaBoard],
+			custom_fields,
 		})
+		console.log(asanaTask)
 		const attachedIssue: AttachResponse = await asana.dispatcher.post(
 			'/attachments',
 			{
@@ -62,11 +117,12 @@ export const createAsanaTask = async (payload: IssuesOpenedEvent) => {
 				url: payload.issue.html_url,
 			}
 		)
+		// TODO: Attach extracted images using Batch API
 		const attachedToGH = await attachIssueToGH({
 			asana_ticket: asanaTask.gid,
-			asana_workspace: asanaBoard,
 			attachment: attachedIssue.data.gid,
 			issue_number: payload.issue.number,
+			githubId: payload.issue.id,
 			owner: payload.repository.owner.login,
 			repo: payload.repository.name,
 		})

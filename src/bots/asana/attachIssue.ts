@@ -16,14 +16,8 @@ export const bodyBlock = (
  * @returns The title of the issue and the attached issue.
  */
 export const attachIssueToGH = async (props: AttachIssueProps) => {
-	const {
-		owner,
-		repo,
-		issue_number,
-		asana_ticket,
-		asana_workspace,
-		attachment,
-	} = props
+	const { owner, repo, issue_number, asana_ticket, githubId, attachment } =
+		props
 
 	/* Getting the issue from github. */
 	const { data: ghIssue } = await githubClient.rest.issues.get({
@@ -41,6 +35,7 @@ export const attachIssueToGH = async (props: AttachIssueProps) => {
 			githubOwner: owner,
 			githubRepo: repo,
 			githubIssue: issue_number.toString(),
+			githubId: ghIssue.id.toString(),
 			issueUrl: ghIssue.html_url,
 			attachmentId: attachment.toString(),
 		},
@@ -49,6 +44,7 @@ export const attachIssueToGH = async (props: AttachIssueProps) => {
 			githubOwner: owner,
 			githubRepo: repo,
 			githubIssue: issue_number.toString(),
+			githubId: ghIssue.id.toString(),
 			issueUrl: ghIssue.html_url,
 			attachmentId: attachment.toString(),
 		},
@@ -77,10 +73,10 @@ interface AttachIssueProps {
 	repo: string
 	/** GitHub Issue number */
 	issue_number: number
+	/** GitHub Issue ID */
+	githubId?: number | string
 	/** Asana Ticket number */
 	asana_ticket: number | string
-	/** Asana Workspace ID */
-	asana_workspace: number | string
 	/** Asana Attachment ID */
 	attachment: number | string
 }

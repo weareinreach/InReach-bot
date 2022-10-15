@@ -28,7 +28,6 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		repo,
 		issue_number: parseInt(issue),
 		asana_ticket: submission.task,
-		asana_workspace: submission.workspace,
 		attachment: submission.attachment,
 	})
 	res.status(200).json({

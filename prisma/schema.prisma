@@ -130,6 +130,7 @@ model AppInstalls {
 model LinkedIssues {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   asanaTicket   String  @unique
+  githubId      String?
   githubOwner   String
   githubRepo    String
   githubIssue   String

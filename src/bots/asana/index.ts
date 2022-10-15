@@ -49,6 +49,9 @@ export const asanaClient = async (userToken?: string | null | undefined) => {
 		clientId: process.env.ASANA_CLIENT_ID,
 		clientSecret: process.env.ASANA_CLIENT_SECRET,
 		redirectUri: `${process.env.NEXTAUTH_URL}/api/auth/callback/asana`,
+		defaultHeaders: {
+			'Asana-Disable': 'new_user_task_lists,new_project_templates',
+		},
 	})
 	const client = oauth.useOauth({ credentials: userToken })
 	return client

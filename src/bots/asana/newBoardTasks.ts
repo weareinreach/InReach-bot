@@ -1,6 +1,6 @@
 import { prisma } from 'util/prisma'
 import { githubClient } from '../github'
-import { getAsanaEnum, batchCreateAsanaEnum } from './customField'
+import { getAsanaGhLabelsEnum, batchCreateAsanaEnum } from './customField'
 import { convertColor } from 'util/colors'
 import invariant from 'tiny-invariant'
 import { AsanaLabel } from '@prisma/client'
@@ -22,7 +22,7 @@ export const syncLabels: SyncLabels = async (org, repo) => {
 			per_page: 100,
 		}
 	)
-	const asanaLabels = await getAsanaEnum()
+	const asanaLabels = await getAsanaGhLabelsEnum()
 
 	const asanaTransactions = githubLabels.data.flatMap((label) => {
 		const labelExistsAsana = asanaLabels.some(

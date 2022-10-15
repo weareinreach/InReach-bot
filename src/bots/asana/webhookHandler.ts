@@ -1,12 +1,22 @@
 import { detachIssue } from './detachIssue'
 import { DateTime } from 'luxon'
 import invariant from 'tiny-invariant'
+import fs from 'fs'
 
-const deletedAttachment: CheckCase = ({ action, type }) =>
-	action === 'deleted' && type === 'attachment'
+const webhookLogger = (event: WebhookEvent) => {
+	const file: any = fs.readFileSync('./webhooklog.json', 'utf8')
+	const webhookLog = JSON.parse(file)
+	webhookLog.push(event)
 
-const taskChanged: CheckCase = ({ action, type }) =>
-	action === 'changed' && type === 'task'
+	fs.writeFileSync('./webhooklog.json', JSON.stringify(webhookLog, null, 2))
+	console.info('event logged')
+}
+
+const deletedAttachment: CheckCase = ({ action, resource }) =>
+	action === 'deleted' && resource.resource_type === 'attachment'
+
+const taskChanged: CheckCase = ({ action, resource }) =>
+	action === 'changed' && resource.resource_type === 'task'
 
 const statusChanged: CheckCase = ({ action, resource, parent }) =>
 	action === 'added' &&
@@ -35,6 +45,7 @@ export const webhookHandler = async (events: Array<WebhookEvent>) => {
 	await Promise.all(
 		events.map(async (event: WebhookEvent) => {
 			console.dir('Event', event)
+			webhookLogger(event)
 			switch (true) {
 				case deletedAttachment(event):
 					const result = await detachIssue(event)
@@ -42,20 +53,23 @@ export const webhookHandler = async (events: Array<WebhookEvent>) => {
 					break
 				case taskAssigned(event):
 					console.log('handle task assignment')
+					console.groupEnd()
 					break
 				case statusChanged(event):
 					console.log('handle column switch')
+					console.groupEnd()
 					break
 				case tagChanged(event):
 					console.log('handle tagging/untagging')
+					console.groupEnd()
 					break
 				default:
 					console.log('event not handled')
+					console.groupEnd()
 					return
 			}
 		})
 	)
-	console.groupEnd()
 }
 
 type CheckCase = (event: WebhookEvent) => boolean
