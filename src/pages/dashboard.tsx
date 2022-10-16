@@ -17,6 +17,7 @@ import { z } from 'zod'
 import { trpc } from 'util/trpc'
 import { useEffect } from 'react'
 import { createAsanaWebhook } from 'src/bots/asana/createWebhook'
+import { useRouter } from 'next/router'
 
 const useStyles = createStyles((theme) => ({
 	header: {
@@ -86,7 +87,7 @@ const useStyles = createStyles((theme) => ({
 const Dashboard = () => {
 	const { classes, theme, cx } = useStyles()
 	const tabs = ['GitHub', 'Asana', 'Zoom']
-	const { data: session } = useSession()
+	const { data: session, status: authStatus } = useSession()
 	const form = useForm<Record<string, string>>()
 	const repos = trpc.github.getActiveRepos.useQuery()
 	// const asanaWorkspace = trpc.asana.getWorkspaces.useQuery()
@@ -94,6 +95,7 @@ const Dashboard = () => {
 	const asanaBoardMutation = trpc.github.attachAsanaBoard.useMutation()
 	const asanaActiveProjects = trpc.asana.getActiveProjects.useQuery()
 	const asanaWebhookCreate = trpc.asana.createWebhook.useMutation()
+	const router = useRouter()
 
 	const handleSubmit = () => {
 		const ids = Object.keys(form.values)
@@ -184,6 +186,13 @@ const Dashboard = () => {
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [repos.isFetched, asanaProjects.isFetched])
+
+	if (authStatus === 'loading') {
+		return <p>Loading...</p>
+	}
+	if (authStatus === 'unauthenticated') {
+		return router.push('/')
+	}
 
 	return (
 		<>
