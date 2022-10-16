@@ -69,7 +69,6 @@ export const githubBot = (app: Probot) => {
 	} catch (err) {
 		if (err instanceof Prisma.NotFoundError) {
 			console.log('event for unmonitored repo')
-			return
 		}
 		console.error('github handler error')
 		console.dir(err)
