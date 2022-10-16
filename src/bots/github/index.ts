@@ -73,6 +73,5 @@ export const githubBot = (app: Probot) => {
 		}
 		console.error('github handler error')
 		console.dir(err)
-		throw err
 	}
 }
