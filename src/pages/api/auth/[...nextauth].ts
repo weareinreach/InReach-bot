@@ -2,6 +2,8 @@ import NextAuth, { type NextAuthOptions } from 'next-auth'
 import SlackProvider from 'next-auth/providers/slack'
 import GitHubProvider from 'next-auth/providers/github'
 import { prisma } from 'util/prisma'
+import { githubClient } from 'src/bots/github/index'
+import { asanaClient } from 'src/bots/asana'
 
 // Prisma adapter for NextAuth, optional and can be removed
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
@@ -15,6 +17,43 @@ export const authOptions: NextAuthOptions = {
 				session.user.admin = user.admin as boolean
 			}
 			return session
+		},
+		async signIn({ account, user, profile }) {
+			if (user.createdAt) return true
+			switch (account?.provider) {
+				case 'slack': {
+					if (
+						profile?.['https://slack.com/team_id'] ===
+						process.env.SLACK_WORKSPACE_ID
+					)
+						return true
+					break
+				}
+				case 'github': {
+					const gh = githubClient
+					const member = await gh.rest.orgs.getMembershipForUser({
+						org: 'weareinreach',
+						username: profile!.login,
+					})
+					if (member.status === 200) return true
+					break
+				}
+				case 'asanapr':
+				case 'asana': {
+					const asana = await asanaClient()
+					const asanauser = await asana.users.findById(profile?.sub as string)
+					if (
+						asanauser.workspaces.some(
+							(space) => space.gid === process.env.ASANA_WORKSPACE
+						)
+					)
+						return true
+				}
+
+				default:
+					return false
+			}
+			return false
 		},
 	},
 	// Configure one or more authentication providers

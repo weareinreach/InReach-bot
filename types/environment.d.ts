@@ -50,6 +50,7 @@ declare global {
 			ASANA_WORKSPACE: string
 			PRASANA_CLIENT_ID: string
 			PRASANA_CLIENT_SECRET: string
+			SLACK_WORKSPACE_ID: string
 		}
 	}
 }
