@@ -1,24 +1,39 @@
 import { prisma } from 'util/prisma'
+import type {
+	IssuesEvent,
+	LabelEvent,
+	PullRequestEvent,
+	PullRequestReviewEvent,
+	CreateEvent,
+} from '@octokit/webhooks-types'
 
 /**
- * If the repo exists in the database, return true, otherwise return false.
- * @param owner - The owner of the repo
- * @param repo - The name of the repository
+ * "If the repo is in the database, return true."
+ *
+ * The function is called `isWatchedRepo` and it takes a payload as an argument. The payload is the
+ * data that is sent to the webhook
+ * @param payload - GitHub webhook payload
  * @returns A boolean
  */
-export const isWatchedRepo = async (owner: string, repo: string) => {
+type GitHubPayload =
+	| IssuesEvent
+	| LabelEvent
+	| PullRequestEvent
+	| PullRequestReviewEvent
+	| CreateEvent
+export const isWatchedRepo = async (payload: GitHubPayload) => {
 	try {
 		const result = await prisma.activeRepo.findFirstOrThrow({
 			where: {
-				repo: repo,
+				repo: payload.repository.name,
 				org: {
-					githubOwner: owner,
+					githubOwner: payload.repository.owner.login,
 				},
 			},
 		})
 
 		if (result) return true
 	} catch (err) {
-		return false
+		throw err
 	}
 }

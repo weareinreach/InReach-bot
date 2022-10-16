@@ -1,6 +1,5 @@
 import { detachIssue } from './detachIssue'
 import { DateTime } from 'luxon'
-import invariant from 'tiny-invariant'
 import fs from 'fs'
 
 const webhookLogger = (event: WebhookEvent) => {
@@ -36,40 +35,44 @@ const tagChanged: CheckCase = ({ parent }) => parent?.resource_type === 'tag'
  * @param events - Array<WebhookEvent>
  */
 export const webhookHandler = async (events: Array<WebhookEvent>) => {
-	console.group(
-		`${DateTime.now().toLocaleString(
-			DateTime.TIME_24_WITH_SHORT_OFFSET
-		)} Webhook handler started`
-	)
-	console.dir(events)
-	await Promise.all(
-		events.map(async (event: WebhookEvent) => {
-			console.dir('Event', event)
-			webhookLogger(event)
-			switch (true) {
-				case deletedAttachment(event):
-					const result = await detachIssue(event)
-					return result
-					break
-				case taskAssigned(event):
-					console.log('handle task assignment')
-					console.groupEnd()
-					break
-				case statusChanged(event):
-					console.log('handle column switch')
-					console.groupEnd()
-					break
-				case tagChanged(event):
-					console.log('handle tagging/untagging')
-					console.groupEnd()
-					break
-				default:
-					console.log('event not handled')
-					console.groupEnd()
-					return
-			}
-		})
-	)
+	try {
+		console.group(
+			`${DateTime.now().toLocaleString(
+				DateTime.TIME_24_WITH_SHORT_OFFSET
+			)} Webhook handler started`
+		)
+		console.dir(events)
+		await Promise.all(
+			events.map(async (event: WebhookEvent) => {
+				console.dir('Event', event)
+				webhookLogger(event)
+				switch (true) {
+					case deletedAttachment(event):
+						const result = await detachIssue(event)
+						return result
+						break
+					case taskAssigned(event):
+						console.log('handle task assignment')
+						console.groupEnd()
+						break
+					case statusChanged(event):
+						console.log('handle column switch')
+						console.groupEnd()
+						break
+					case tagChanged(event):
+						console.log('handle tagging/untagging')
+						console.groupEnd()
+						break
+					default:
+						console.log('event not handled')
+						console.groupEnd()
+						return
+				}
+			})
+		)
+	} catch (err) {
+		console.error(err)
+	}
 }
 
 type CheckCase = (event: WebhookEvent) => boolean

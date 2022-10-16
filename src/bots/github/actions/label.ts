@@ -15,19 +15,7 @@ import { prisma } from 'util/prisma'
  * @returns The label created or updated
  */
 export const labelActions = async (payload: LabelEvent) => {
-	const { action, label, repository } = payload
-	const monitoredRepo = !!(await prisma.activeRepo.findFirst({
-		where: {
-			org: {
-				githubOwner: repository.owner.login,
-			},
-			repo: repository.name,
-		},
-		select: {
-			repo: true,
-		},
-	}))
-	invariant(monitoredRepo, 'Repo not monitored')
+	const { action, label } = payload
 	const labelColor = convertColor(label.color)
 	invariant(labelColor, 'Color not found')
 	switch (action) {

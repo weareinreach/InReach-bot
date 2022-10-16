@@ -5,6 +5,8 @@ import { createAsanaTask } from './createAsanaTask'
 import { isWatchedRepo } from './isWatchedRepo'
 import { asanaBlockRegex } from 'util/regex'
 import { labelActions } from './actions/label'
+import { Prisma } from '@prisma/client'
+import { linkPullRequest } from './actions/prLink'
 
 /* It's creating a new Octokit client that uses the GitHub App's private key to authenticate. */
 export const githubClient = new Octokit({
@@ -26,34 +28,51 @@ export const githubClient = new Octokit({
  */
 export const githubBot = (app: Probot) => {
 	/* When an issue is opened, create an Asana ticket, if it's a watched Repo and a ticket has not already been created. */
-	app.on('issues.opened', async (context) => {
-		if (
-			!isWatchedRepo(
-				context.payload.repository.owner.login,
-				context.payload.repository.name
-			)
-		) {
+	try {
+		app.on('issues.opened', async (context) => {
+			/* It's checking to see if the repo is watched. */
+			isWatchedRepo(context.payload)
+
+			/* It's checking to see if the issue body contains the Asana block. */
+			if (asanaBlockRegex.test(context.payload.issue.body ?? '')) {
+				return
+			}
+
+			/* It's creating an Asana task. */
+			const task = createAsanaTask(context.payload)
+			return task
+		})
+
+		app.on('issues.edited', async (context) => {
+			/* It's checking to see if the repo is watched. */
+			isWatchedRepo(context.payload)
+			console.info('issue edited')
+
+			console.dir(context.payload.changes)
+			/* Do something with edited issues. */
+		})
+
+		app.on('label', async (context) => {
+			/* It's checking to see if the repo is watched. */
+			isWatchedRepo(context.payload)
+			console.info('label event')
+
+			return await labelActions(context.payload)
+		})
+		app.on('pull_request', async (context) => {
+			/* It's checking to see if the repo is watched. */
+			isWatchedRepo(context.payload)
+
+			/* It's linking the PR to the Asana task. */
+			await linkPullRequest(context)
+		})
+	} catch (err) {
+		if (err instanceof Prisma.NotFoundError) {
+			console.log('event for unmonitored repo')
 			return
 		}
-		if (asanaBlockRegex.test(context.payload.issue.body ?? '')) {
-			return
-		}
-
-		const task = createAsanaTask(context.payload)
-		return task
-	})
-
-	app.on('issues.edited', async (context) => {
-		/* Do something with edited issues. */
-		console.dir('issue edited', context.payload.changes)
-	})
-
-	app.on('label', async (context) => {
-		console.group('label event')
-		console.dir(context.payload)
-		const label = labelActions(context.payload)
-		console.dir(label)
-		console.groupEnd()
-		return label
-	})
+		console.error('github handler error')
+		console.dir(err)
+		throw err
+	}
 }

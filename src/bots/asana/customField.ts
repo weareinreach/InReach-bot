@@ -51,7 +51,7 @@ export const batchCreateAsanaEnum: BatchAsanaEnumCreate = async (props) => {
 			relativePath: `/custom_fields/${fieldGid}/enum_options`,
 		}
 	})
-	const batchData = await asanaBatch(queue)
+	const batchData = await asanaBatch<EnumObject>(queue)
 	const formattedData = batchData.map((result) => ({
 		gid: result.body.data.gid,
 		resource_type: result.body.data.resource_type,
