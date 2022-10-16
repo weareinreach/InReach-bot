@@ -11,7 +11,6 @@ export const slackBot = (app: App) => {
 
 	app.action('getinvite', async (params) => {
 		const { ack, body, client } = params
-		// const payload = params.payload as ButtonAction
 
 		await ack()
 
@@ -53,9 +52,6 @@ export const slackBot = (app: App) => {
 			user: body.user.id,
 			blocks: messageBlock,
 		})
-
-		// const uuid = payload.value
-		// await storeUser(uuid, user.profile?.display_name as string)
 	})
 	app.action('joinzoom', async ({ ack }) => ack())
 	app.event('app_home_opened', async ({ event, client }) => {
