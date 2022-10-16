@@ -48,6 +48,8 @@ declare global {
 			NEXT_PUBLIC_SENTRY_DSN: string
 
 			ASANA_WORKSPACE: string
+			PRASANA_CLIENT_ID: string
+			PRASANA_CLIENT_SECRET: string
 		}
 	}
 }

@@ -1,15 +1,15 @@
 import { detachIssue } from './detachIssue'
 import { DateTime } from 'luxon'
-import fs from 'fs'
+// import fs from 'fs'
 
-const webhookLogger = (event: WebhookEvent) => {
-	const file: any = fs.readFileSync('./webhooklog.json', 'utf8')
-	const webhookLog = JSON.parse(file)
-	webhookLog.push(event)
+// const webhookLogger = (event: WebhookEvent) => {
+// 	const file: any = fs.readFileSync('./webhooklog.json', 'utf8')
+// 	const webhookLog = JSON.parse(file)
+// 	webhookLog.push(event)
 
-	fs.writeFileSync('./webhooklog.json', JSON.stringify(webhookLog, null, 2))
-	console.info('event logged')
-}
+// 	fs.writeFileSync('./webhooklog.json', JSON.stringify(webhookLog, null, 2))
+// 	console.info('event logged')
+// }
 
 const deletedAttachment: CheckCase = ({ action, resource }) =>
 	action === 'deleted' && resource.resource_type === 'attachment'
@@ -45,7 +45,7 @@ export const webhookHandler = async (events: Array<WebhookEvent>) => {
 		await Promise.all(
 			events.map(async (event: WebhookEvent) => {
 				console.dir('Event', event)
-				webhookLogger(event)
+				// webhookLogger(event)
 				switch (true) {
 					case deletedAttachment(event):
 						const result = await detachIssue(event)

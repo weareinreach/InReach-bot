@@ -15,6 +15,8 @@ specifiers:
   '@newrelic/next': ^0.3.0
   '@next-auth/prisma-adapter': ^1.0.5
   '@octokit/auth-app': ^4.0.7
+  '@octokit/graphql': ^5.0.3
+  '@octokit/graphql-schema': ^12.11.0
   '@octokit/types': ^8.0.0
   '@octokit/webhooks-types': ^6.4.0
   '@prisma/client': ^4.4.0
@@ -79,6 +81,8 @@ dependencies:
   '@newrelic/next': 0.3.0_newrelic@9.2.0
   '@next-auth/prisma-adapter': 1.0.5_f6johzj7om6s3zhjvbbzqeonqy
   '@octokit/auth-app': 4.0.7
+  '@octokit/graphql': 5.0.3
+  '@octokit/graphql-schema': 12.11.0
   '@prisma/client': 4.4.0_prisma@4.4.0
   '@sentry/nextjs': 7.15.0_next@12.3.1+react@18.2.0
   '@slack/bolt': 3.12.1
@@ -1107,6 +1111,13 @@ packages:
       '@octokit/types': 8.0.0
       is-plain-object: 5.0.0
       universal-user-agent: 6.0.0
+    dev: false
+
+  /@octokit/graphql-schema/12.11.0:
+    resolution: {integrity: sha512-bJNi8JuOK5dlBsmzTwh5vUkUZ3ZGW39+f84Qdd5CdB2S0eTLFBiQi5dagc+aMNUbLNNz6Cf27qiVWSZRrX/nsg==}
+    dependencies:
+      graphql: 16.6.0
+      graphql-tag: 2.12.6_graphql@16.6.0
     dev: false
 
   /@octokit/graphql/4.8.0:
@@ -3832,6 +3843,21 @@ packages:
   /grapheme-splitter/1.0.4:
     resolution: {integrity: sha512-bzh50DW9kTPM00T8y4o8vQg89Di9oLJVLW/KaOGIXJWP/iqCN6WKYkbNOF04vFLJhwcpYUh9ydh/+5vpOqV4YQ==}
     dev: true
+
+  /graphql-tag/2.12.6_graphql@16.6.0:
+    resolution: {integrity: sha512-FdSNcu2QQcWnM2VNvSCCDCVS5PpPqpzgFT8+GXzqJuoDd0CBncxCY278u4mhRO7tMgo2JjgJA5aZ+nWSQ/Z+xg==}
+    engines: {node: '>=10'}
+    peerDependencies:
+      graphql: ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0
+    dependencies:
+      graphql: 16.6.0
+      tslib: 2.4.0
+    dev: false
+
+  /graphql/16.6.0:
+    resolution: {integrity: sha512-KPIBPDlW7NxrbT/eh4qPXz5FiFdL5UbaA0XUNz2Rp3Z3hqBSkbj0GVjwFDztsWVauZUWsbKHgMg++sk8UX0bkw==}
+    engines: {node: ^12.22.0 || ^14.16.0 || ^16.0.0 || >=17.0.0}
+    dev: false
 
   /handlebars/4.7.7:
     resolution: {integrity: sha512-aAcXm5OAfE/8IXkcZvCepKU3VzW1/39Fb5ZuqMtgI/hT8X2YgoMvBY5dLhq/cpOvw7Lk1nK/UF71aLG/ZnVYRA==}
