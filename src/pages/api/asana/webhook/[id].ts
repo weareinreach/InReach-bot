@@ -1,9 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import crypto from 'crypto'
 import { prisma } from 'util/prisma'
 import NextCors from 'nextjs-cors'
-import { handleDetach, WebhookEvent } from 'src/bots/asana/detachIssue'
 import { createSignature, matchSignature } from 'util/crypto'
+import { webhookHandler, WebhookEvent } from 'src/bots/asana/webhookHandler'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
@@ -29,6 +28,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 			create: {
 				webhookId: id,
 				token: secret,
+				board: { connect: { boardId: id } },
 			},
 		})
 
@@ -61,9 +61,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		} else {
 			// Success
 			const events: Array<WebhookEvent> = req.body.events
-			console.log(`Events on ${Date()}:`)
-			console.log(events)
-			if (events.length >= 1) handleDetach(events)
+			webhookHandler(events)
 			res.status(200).end()
 		}
 	} else {

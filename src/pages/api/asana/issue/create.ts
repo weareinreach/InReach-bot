@@ -1,45 +1,64 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { probot } from '../../github'
 import NextCors from 'nextjs-cors'
-import { attachIssue } from 'src/bots/asana/attachIssue'
+import { verifySignature } from 'util/crypto'
+import { bodyTagsRegex } from 'util/regex'
+import invariant from 'tiny-invariant'
+import { bodyBlock } from 'src/bots/asana/attachIssue'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
+	if (!verifySignature({ service: 'asanapr', req, res }))
+		return res.status(401).json({ message: 'Signature verification failed.' })
+
 	const gh = await probot.auth(parseInt(process.env.GITHUB_INSTALL_ID))
-	console.log(req.body)
+
 	const data: IssueSubmission = JSON.parse(req.body.data)
-	console.log(data)
-	const [org, repo] = data.values.repo.split('/')
+
+	const [org, repo]: string[] = data.values.repo.split('/')
+	invariant(org && repo, 'Invalid Org/Repo')
 
 	const labels = [data.values.labelsPriority, data.values.labelsType].filter(
 		(x) => x !== ''
 	)
 
-	const body = data.values.body.replace('<BODY>', '').replace('</BODY>', '')
+	const body = data.values.body.replace(bodyTagsRegex, '')
 
 	const newIssue = await gh.issues.create({
-		owner: org as string,
-		repo: repo as string,
+		owner: org,
+		repo: repo,
 		title: data.values.title,
-		body,
+		body: bodyBlock(body, data.task),
 		labels: labels,
 	})
 
-	console.log(await newIssue)
-	const attachedIssue = await attachIssue({
-		owner: org as string,
-		repo: repo as string,
-		issue_number: newIssue.data.number,
-		asana_ticket: data.task,
-		asana_workspace: data.workspace,
-		attachment: data.attachment,
-		user: data.user,
+	const attachedIssue = await prisma?.linkedIssues.upsert({
+		where: {
+			asanaTicket: data.task.toString(),
+		},
+		update: {
+			githubOwner: org,
+			githubRepo: repo,
+			githubIssue: newIssue.data.number.toString(),
+			issueUrl: newIssue.data.html_url,
+			attachmentId: data.attachment.toString(),
+		},
+		create: {
+			asanaTicket: data.task.toString(),
+			githubOwner: org,
+			githubRepo: repo,
+			githubIssue: newIssue.data.number.toString(),
+			issueUrl: newIssue.data.html_url,
+			attachmentId: data.attachment.toString(),
+		},
 	})
+	invariant(attachedIssue, 'Issue attach error')
+
 	res.status(200).json({
-		resource_name: attachedIssue.title,
-		resource_url: attachedIssue.attachedIssue.issueUrl,
+		resource_name: newIssue.data.title,
+		resource_url: attachedIssue.issueUrl,
 	})
 }
 

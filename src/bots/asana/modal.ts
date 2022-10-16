@@ -1,6 +1,8 @@
-import { getIssueList, getIssuesFromGH } from './getIssueData'
+import { getIssueList } from './getIssueData'
 import { prisma } from 'util/prisma'
-
+import type { OnChangeBody } from 'src/pages/api/asana/issue/onchange'
+import { asanaClient } from '.'
+import type { components as AsanaAppComponents } from 'types/asana-app-components'
 /**
  * It returns a radio button field with two options, one for creating a new issue and one for attaching
  * an existing issue
@@ -49,7 +51,7 @@ interface DropDownValues {
  * It returns an object that contains a template and metadata. The metadata contains the title, submit
  * button text, and a list of fields. The fields are a dropdown of repos, and if a repo is selected, a
  * dropdown of issues
- * @param {string} [repo] - The name of the repo to pre-select in the dropdown.
+ * @param [repo] - The name of the repo to pre-select in the dropdown.
  * @returns An object with a template and metadata property.
  */
 export const attachModal = async (repo?: string) => {
@@ -74,7 +76,7 @@ export const attachModal = async (repo?: string) => {
 	}
 	const issuePassthru = encodeURIComponent(JSON.stringify(issues))
 
-	const modalFields = []
+	const modalFields: ModalField[] = []
 	modalFields.push({
 		type: 'dropdown',
 		id: 'repo',
@@ -111,12 +113,14 @@ export const attachModal = async (repo?: string) => {
 }
 
 /**
- * It returns an object that contains a template and metadata. The metadata is a JSON object that
- * contains the fields that will be displayed in the modal
- * @param {string} task - The task ID of the task that the modal is being opened on.
- * @returns A modal object
+ * It creates a modal that allows you to create a GitHub issue from an Asana task
+ * @param taskData - OnChangeBody
+ * @returns An object with a template and metadata
  */
-export const createIssueModal = async (task: string) => {
+export const createIssueModal = async (taskData: OnChangeBody) => {
+	const asana = await asanaClient()
+	const task = await asana.tasks.getTask(taskData.task)
+
 	const repos = await prisma.activeRepo.findMany({
 		select: {
 			repo: true,
@@ -154,6 +158,7 @@ export const createIssueModal = async (task: string) => {
 					name: 'Issue Title',
 					is_required: true,
 					placeholder: 'Type something...',
+					value: task.name,
 					width: 'full',
 				},
 
@@ -161,6 +166,7 @@ export const createIssueModal = async (task: string) => {
 					type: 'rich_text',
 					id: 'body',
 					name: 'Issue body',
+					value: task.notes,
 					is_required: false,
 				},
 				{
@@ -213,3 +219,15 @@ export const createIssueModal = async (task: string) => {
 		},
 	}
 }
+
+type ModalField =
+	| AsanaAppComponents['schemas']['FormField-Checkbox']
+	| AsanaAppComponents['schemas']['FormField-Date']
+	| AsanaAppComponents['schemas']['FormField-Datetime']
+	| AsanaAppComponents['schemas']['FormField-Dropdown']
+	| AsanaAppComponents['schemas']['FormField-MultiLineText']
+	| AsanaAppComponents['schemas']['FormField-RadioButton']
+	| AsanaAppComponents['schemas']['FormField-RichText']
+	| AsanaAppComponents['schemas']['FormField-SingleLineText']
+	| AsanaAppComponents['schemas']['FormField-StaticText']
+	| AsanaAppComponents['schemas']['FormField-Typeahead']

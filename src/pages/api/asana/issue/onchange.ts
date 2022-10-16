@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { attachModal, createIssueModal } from 'src/bots/asana/modal'
+import { verifySignature } from 'util/crypto'
 
 /**
  * It returns a modal view based on the value of the changed field
@@ -10,7 +11,7 @@ import { attachModal, createIssueModal } from 'src/bots/asana/modal'
 const getView = async (data: OnChangeBody) => {
 	if (data.changed_field === 'create') {
 		if (data.values.create === 'create') {
-			return createIssueModal(data.task.toString())
+			return createIssueModal(data)
 		}
 		return await attachModal()
 	}
@@ -24,6 +25,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
+	if (!verifySignature({ service: 'asanapr', req, res }))
+		return res.status(401).json({ message: 'Signature verification failed.' })
+
 	const data: OnChangeBody = JSON.parse(req.body.data)
 
 	const view = await getView(data)
@@ -35,15 +39,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 
 export default handler
 
-interface OnChangeBody {
-	user: number
+export interface OnChangeBody {
+	user: string
 	changed_field: string
-	workspace: number
+	workspace: string
 	expires: number
 	expires_at: string
 	locale: string
 	values: Values
-	task: number
+	task: string
 }
 
 interface Values {

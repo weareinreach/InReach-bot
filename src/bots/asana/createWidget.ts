@@ -12,8 +12,8 @@ const icons = {
 
 /**
  * It returns an object with the template, metadata, and attachment_id properties
- * @param {string} task - The task ID of the task that the widget is being created for.
- * @param {string} attachmentId - The ID of the attachment that was created.
+ * @param task - The task ID of the task that the widget is being created for.
+ * @param attachmentId - The ID of the attachment that was created.
  * @returns An Asana Widget definition object
  *
  */

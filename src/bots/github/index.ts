@@ -1,8 +1,14 @@
 import { Probot } from 'probot'
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from 'octokit'
+import { createAsanaTask } from './createAsanaTask'
+import { isWatchedRepo } from './isWatchedRepo'
+import { asanaBlockRegex } from 'util/regex'
+import { labelActions } from './actions/label'
+import { Prisma } from '@prisma/client'
+import { linkPullRequest } from './actions/prLink'
 
-/* Creating a new Octokit client with the appId, privateKey, and installationId. */
+/* It's creating a new Octokit client that uses the GitHub App's private key to authenticate. */
 export const githubClient = new Octokit({
 	authStrategy: createAppAuth,
 	auth: {
@@ -15,20 +21,56 @@ export const githubClient = new Octokit({
 	},
 })
 
+/**
+ * `githubBot` is a function that takes a Probot app as an argument and returns a function that listens
+ * for events and acts based on the event.
+ * @param app - Probot - This is the Probot app that we're using to create our GitHub bot.
+ */
 export const githubBot = (app: Probot) => {
-	app.on('issues.opened', async (context) => {
-		const issueComment = context.issue({
-			body: 'Thanks for opening this issue!',
-		})
-		// await context.octokit.issues.createComment(issueComment)
-	})
-	app.on('issues.edited', async (context) => {
-		console.log('issue edited')
-		console.log(context.payload.changes)
-	})
-	// For more information on building apps:
-	// https://probot.github.io/docs/
+	/* When an issue is opened, create an Asana ticket, if it's a watched Repo and a ticket has not already been created. */
+	try {
+		app.on('issues.opened', async (context) => {
+			/* It's checking to see if the repo is watched. */
+			if (!isWatchedRepo(context.payload)) return
 
-	// To get your app running against GitHub, see:
-	// https://probot.github.io/docs/development/
+			/* It's checking to see if the issue body contains the Asana block. */
+			if (asanaBlockRegex.test(context.payload.issue.body ?? '')) {
+				return
+			}
+
+			/* It's creating an Asana task. */
+			const task = createAsanaTask(context.payload)
+			return task
+		})
+
+		app.on('issues.edited', async (context) => {
+			/* It's checking to see if the repo is watched. */
+			if (!isWatchedRepo(context.payload)) return
+			console.info('issue edited')
+
+			console.dir(context.payload.changes)
+			/* Do something with edited issues. */
+		})
+
+		app.on('label', async (context) => {
+			/* It's checking to see if the repo is watched. */
+			if (!isWatchedRepo(context.payload)) return
+			console.info('label event')
+
+			return await labelActions(context.payload)
+		})
+		app.on('pull_request', async (context) => {
+			/* It's checking to see if the repo is watched. */
+			if (!isWatchedRepo(context.payload)) return
+
+			/* It's linking the PR to the Asana task. */
+			await linkPullRequest(context)
+		})
+	} catch (err) {
+		if (err instanceof Prisma.NotFoundError) {
+			console.log('event for unmonitored repo')
+		}
+		console.error('github handler error')
+		console.dir(err)
+	}
 }

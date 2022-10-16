@@ -3,6 +3,11 @@ import { getUser } from './slackUtil/redis'
 
 const ZOOM_API = 'https://api.zoom.us/v2'
 
+/**
+ * It takes the client ID and secret from the environment variables, encodes them, and sends them to
+ * Zoom's API to get an access token
+ * @returns The access token is being returned.
+ */
 const getAccessToken = async () => {
 	const payloadUnencoded = `${process.env.ZOOM_CLIENT_ID}:${process.env.ZOOM_CLIENT_SECRET}`
 	const authToken = Buffer.from(payloadUnencoded).toString('base64')
@@ -23,6 +28,13 @@ const getAccessToken = async () => {
 	return response.data.access_token
 }
 
+/**
+ * It takes a username and a meeting ID, gets an access token, and then creates an invite link for the
+ * user to join the meeting
+ * @param username - The username of the user you want to create an invite link for
+ * @param meetingId - The ID of the meeting you want to create an invite link for.
+ * @returns The unique meeting invite URL
+ */
 export const createInvite = async (username: string, meetingId: string) => {
 	try {
 		const token = await getAccessToken()

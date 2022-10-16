@@ -13,7 +13,6 @@ datasource db {
 // Necessary for Next auth
 model Account {
   id                       String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId                   String
   type                     String
   provider                 String
   providerAccountId        String
@@ -28,7 +27,9 @@ model Account {
   session_state            String?
   state                    String?
   ok                       Boolean?
-  user                     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -39,9 +40,10 @@ model Account {
 model Session {
   id           String   @id @default(auto()) @map("_id") @db.ObjectId
   sessionToken String   @unique
-  userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
@@ -53,13 +55,16 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+  asanaActAs    Boolean   @default(false)
+  admin         Boolean   @default(false)
+
   accounts      Account[]
   sessions      Session[]
   createMessage Message[] @relation("createMessage")
   updateMessage Message[] @relation("updateMessage")
 
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model VerificationToken {
@@ -72,16 +77,18 @@ model VerificationToken {
 }
 
 model Message {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  channel     String
-  message     String
-  cronId      String
-  createdAt   DateTime @default(now())
-  createdBy   User     @relation("createMessage", fields: [createdById], references: [id])
-  createdById String
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  channel String
+  message String
+  cronId  String
+
   updatedAt   DateTime @updatedAt
   updatedBy   User     @relation("updateMessage", fields: [updatedById], references: [id])
   updatedById String
+
+  createdAt   DateTime @default(now())
+  createdBy   User     @relation("createMessage", fields: [createdById], references: [id])
+  createdById String
 }
 
 model ConvoStore {
@@ -98,7 +105,8 @@ model Coworking {
   jrThreadTimestamp String
   startTime         DateTime
   endTime           DateTime?
-  createdAt         DateTime? @default(now())
+
+  createdAt DateTime? @default(now())
 }
 
 model CoworkingAttendee {
@@ -122,6 +130,7 @@ model AppInstalls {
 model LinkedIssues {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   asanaTicket   String  @unique
+  githubId      String?
   githubOwner   String
   githubRepo    String
   githubIssue   String
@@ -135,18 +144,23 @@ model LinkedIssues {
 }
 
 model ActiveOrg {
-  id          String       @id @default(auto()) @map("_id") @db.ObjectId
-  githubOwner String       @unique
-  repos       ActiveRepo[]
-  createdAt   DateTime?    @default(now())
-  updatedAt   DateTime?    @updatedAt
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  githubOwner String @unique
+
+  repos ActiveRepo[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model ActiveRepo {
-  id           String      @id @default(auto()) @map("_id") @db.ObjectId
-  org          ActiveOrg   @relation(fields: [orgId], references: [id])
-  orgId        String      @db.ObjectId
-  repo         String
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  repo     String
+  fullName String?
+
+  org   ActiveOrg @relation(fields: [orgId], references: [id])
+  orgId String    @db.ObjectId
+
   asanaBoard   AsanaBoard? @relation(fields: [asanaBoardId], references: [id])
   asanaBoardId String?     @db.ObjectId
 
@@ -157,15 +171,62 @@ model ActiveRepo {
 }
 
 model AsanaBoard {
-  id      String       @id @default(auto()) @map("_id") @db.ObjectId
-  boardId String
-  repos   ActiveRepo[]
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  boardId   String  @unique
+  boardName String?
+
+  repos        ActiveRepo[]
+  asanaWebhook AsanaWebhook?
+  sections     AsanaSection[]
+  customFields AsanaCustomField[]
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }
 
 model AsanaWebhook {
   id        String @id @default(auto()) @map("_id") @db.ObjectId
   webhookId String @unique
   token     String
+
+  board   AsanaBoard @relation(fields: [boardId], references: [id])
+  boardId String     @unique @db.ObjectId
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model AsanaLabel {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  gid     String
+  ghId    Int     @unique
+  name    String
+  color   String
+  enabled Boolean
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+
+  @@unique([gid, ghId])
+}
+
+model AsanaSection {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  board   AsanaBoard @relation(fields: [boardId], references: [id])
+  boardId String     @db.ObjectId
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
+model AsanaCustomField {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+
+  board   AsanaBoard @relation(fields: [boardId], references: [id])
+  boardId String     @db.ObjectId
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @updatedAt
