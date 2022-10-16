@@ -8,7 +8,14 @@ export const bodyTagsRegex = /(<[\/]?body>)/gi
 export const extractTaskFromBlock = /<!--Asana:(\d+)-->/
 
 export const githubIssueRegex =
-	/http[s]?:\/\/[.*\.]?github.com\/[a-z-0-9]*\/[a-z0-9-_.]*\/issues\/\d+/gi
+	/http[s]?:\/\/[.*\.]?github\.com\/[a-z-0-9]*\/[a-z0-9-_.]*\/issues\/\d+/gi
+
+export const githubPullRegex =
+	/http[s]?:\/\/[.*\.]?github\.com\/[a-z-0-9]*\/[a-z0-9-_.]*\/pull\/\d+/gi
+
+export const githubPrExtractRegex =
+	// /http[s]?:\/\/[.*\.]?github\.com\/([a-z-0-9]*)\/([a-z0-9-_.]*)\/pull\/(\d+)/gi
+	/http[s]?:\/\/[.*\.]?github\.com\/(?<owner>[a-z-0-9]*)\/(?<repo>[a-z0-9-_.]*)\/pull\/(?<pr>\d+)/gi
 
 export const htmlRegex = {
 	/* A regex that matches HTML comments. */

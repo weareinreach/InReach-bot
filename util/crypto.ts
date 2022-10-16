@@ -8,6 +8,7 @@ const token = {
 	slack: process.env.SLACK_CLIENT_SECRET,
 	slackjr: process.env.SLACKJR_CLIENT_SECRET,
 	zoom: process.env.ZOOM_CLIENT_SECRET,
+	asanapr: process.env.PRASANA_CLIENT_SECRET,
 }
 const sigHeader = {
 	asana: 'x-asana-request-signature',
@@ -16,6 +17,7 @@ const sigHeader = {
 	slack: '',
 	slackjr: '',
 	zoom: 'x-zm-signature',
+	asanapr: 'x-asana-request-signature',
 }
 
 /**
@@ -54,6 +56,7 @@ export const verifySignature = ({ service, req, res }: VerifySignature) => {
 	let payload: string = ''
 
 	switch (service) {
+		case 'asanapr':
 		case 'asana':
 			payload =
 				req.method === 'POST'
@@ -68,7 +71,8 @@ export const verifySignature = ({ service, req, res }: VerifySignature) => {
 		return true
 	}
 	console.warn(`${service} request signature verification failed!`)
-	return res.status(401).json({ message: 'Signature verification failed.' })
+	// return res.status(401).json({ message: 'Signature verification failed.' })
+	return false
 }
 
 type VerifySignature = {

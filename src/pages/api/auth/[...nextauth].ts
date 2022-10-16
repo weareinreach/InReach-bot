@@ -48,6 +48,26 @@ export const authOptions: NextAuthOptions = {
 				}
 			},
 		},
+		{
+			id: 'asanapr',
+			name: 'Asana PR',
+			type: 'oauth',
+			wellKnown:
+				'https://app.asana.com/api/1.0/.well-known/openid-configuration',
+			clientId: process.env.PRASANA_CLIENT_ID,
+			clientSecret: process.env.PRASANA_CLIENT_SECRET,
+			authorization: { params: { scope: 'openid email profile default' } },
+			idToken: true,
+			checks: ['state'],
+			profile(profile: AsanaProfile) {
+				return {
+					id: profile.sub,
+					name: profile.name,
+					email: profile.email,
+					image: profile.picture,
+				}
+			},
+		},
 	],
 }
 
