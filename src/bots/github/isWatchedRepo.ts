@@ -6,6 +6,7 @@ import type {
 	PullRequestReviewEvent,
 	CreateEvent,
 } from '@octokit/webhooks-types'
+import { Prisma } from '@prisma/client'
 
 /**
  * "If the repo is in the database, return true."
@@ -34,6 +35,9 @@ export const isWatchedRepo = async (payload: GitHubPayload) => {
 
 		if (result) return true
 	} catch (err) {
-		throw err
+		if (err instanceof Prisma.NotFoundError) {
+			console.log('event for unmonitored repo')
+			return false
+		}
 	}
 }

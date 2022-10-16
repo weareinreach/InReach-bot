@@ -31,7 +31,7 @@ export const githubBot = (app: Probot) => {
 	try {
 		app.on('issues.opened', async (context) => {
 			/* It's checking to see if the repo is watched. */
-			isWatchedRepo(context.payload)
+			if (!isWatchedRepo(context.payload)) return
 
 			/* It's checking to see if the issue body contains the Asana block. */
 			if (asanaBlockRegex.test(context.payload.issue.body ?? '')) {
@@ -45,7 +45,7 @@ export const githubBot = (app: Probot) => {
 
 		app.on('issues.edited', async (context) => {
 			/* It's checking to see if the repo is watched. */
-			isWatchedRepo(context.payload)
+			if (!isWatchedRepo(context.payload)) return
 			console.info('issue edited')
 
 			console.dir(context.payload.changes)
@@ -54,14 +54,14 @@ export const githubBot = (app: Probot) => {
 
 		app.on('label', async (context) => {
 			/* It's checking to see if the repo is watched. */
-			isWatchedRepo(context.payload)
+			if (!isWatchedRepo(context.payload)) return
 			console.info('label event')
 
 			return await labelActions(context.payload)
 		})
 		app.on('pull_request', async (context) => {
 			/* It's checking to see if the repo is watched. */
-			isWatchedRepo(context.payload)
+			if (!isWatchedRepo(context.payload)) return
 
 			/* It's linking the PR to the Asana task. */
 			await linkPullRequest(context)
