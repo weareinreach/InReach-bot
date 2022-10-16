@@ -91,8 +91,8 @@ const updateMessage = async (
 				emoji: true,
 			},
 			value: uniqueId,
-			url: `${process.env.BASE_URL}/zoom/join/${uniqueId}`,
-			action_id: 'button-action',
+			// url: `${process.env.BASE_URL}/zoom/join/${uniqueId}`,
+			action_id: 'getinvite',
 			style: 'primary',
 			confirm: {
 				title: {
