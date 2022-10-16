@@ -7,8 +7,8 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
-	verifySignature({ service: 'asana', req, res })
-	console.log('widget')
+	if (!verifySignature({ service: 'asanapr', req, res }))
+		return res.status(401).json({ message: 'Signature verification failed.' })
 
 	// console.log(await gh.issues.listForRepo({ owner: org, repo: 'inreach-api' }))
 	res.json(firstModal)

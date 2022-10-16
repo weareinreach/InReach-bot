@@ -10,11 +10,13 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
-	verifySignature({ service: 'asana', req, res })
+	if (!verifySignature({ service: 'asanapr', req, res }))
+		return res.status(401).json({ message: 'Signature verification failed.' })
+
 	const gh = await probot.auth(parseInt(process.env.GITHUB_INSTALL_ID))
-	console.log(req.body)
+
 	const data: IssueSubmission = JSON.parse(req.body.data)
-	console.log(data)
+
 	const [org, repo]: string[] = data.values.repo.split('/')
 	invariant(org && repo, 'Invalid Org/Repo')
 
