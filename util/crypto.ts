@@ -1,5 +1,5 @@
-import crypto from 'crypto'
-import invariant from 'tiny-invariant'
+// import crypto from 'crypto'
+// import invariant from 'tiny-invariant'
 import { NextApiRequest, NextApiResponse } from 'next'
 
 const token = {
@@ -21,40 +21,34 @@ const sigHeader = {
 }
 
 /**
- * It takes a secret and a content string, and returns a SHA256 hash of the content string, using the
- * secret as the key
- * @param secret - The secret key used to create the signature.
- * @param content - The content to be signed.
- * @returns SHA256 hash signature
+ * It takes a secret string and returns a key that can be used to sign and verify data
+ * @param {string} secret - The secret key used to sign the token.
  */
-export const createSignature = (secret: string, content: string) =>
-	crypto.createHmac('SHA256', secret).update(content).digest('hex')
+const createKey = async (secret: string) =>
+	await crypto.subtle.importKey(
+		'raw',
+		new TextEncoder().encode(secret),
+		{ name: 'HMAC', hash: 'SHA-256' },
+		false,
+		['sign', 'verify']
+	)
 
-/**
- * It compares two signatures and returns true if they match
- * @param sig1 - The signature you received from the request header
- * @param sig2 - The signature that was sent to us by the client.
- * @returns boolean
- */
-export const matchSignature = (sig1: string, sig2: string) =>
-	crypto.timingSafeEqual(Buffer.from(sig1), Buffer.from(sig2))
+export const verifySignature = async ({ service, req }: VerifySignature) => {
+	const key = await createKey(token[service])
 
-/**
- * It takes a service name, a request object, and a response object, and returns true if the request
- * signature is valid, or sends a 401 response if it's not
- * @param VerifySignature
- * @returns `true` | `401 unauthorized` response
- */
-export const verifySignature = ({ service, req, res }: VerifySignature) => {
-	const signature =
+	const signatureVal =
 		req.headers[
 			service === 'asana'
 				? sigHeader.asana || sigHeader.asanaHook
 				: sigHeader[service]
 		]
-	invariant(typeof signature === 'string', 'Invalid Signature')
-	let payload: string = ''
+	if (typeof signatureVal !== 'string') {
+		console.log('Signature is not a string')
+		return false
+	}
 
+	const signature = Uint8Array.from(atob(signatureVal), (c) => c.charCodeAt(0))
+	let payload: string = ''
 	switch (service) {
 		case 'asanapr':
 		case 'asana':
@@ -64,19 +58,78 @@ export const verifySignature = ({ service, req, res }: VerifySignature) => {
 					: new URLSearchParams(req.query as Record<string, any>).toString()
 			break
 	}
-	const computedSignature = createSignature(token[service], payload)
 
-	if (matchSignature(signature, computedSignature)) {
-		console.log(`${service} request signature verified`)
+	const isValid = await crypto.subtle.verify(
+		{ name: 'HMAC' },
+		key,
+		signature,
+		Uint8Array.from(payload, (c) => c.charCodeAt(0))
+	)
+
+	if (isValid) {
+		console.info(`${service} request signature verification passed.`)
 		return true
 	}
 	console.warn(`${service} request signature verification failed!`)
-	// return res.status(401).json({ message: 'Signature verification failed.' })
 	return false
 }
+
+// /**
+//  * It takes a secret and a content string, and returns a SHA256 hash of the content string, using the
+//  * secret as the key
+//  * @param secret - The secret key used to create the signature.
+//  * @param content - The content to be signed.
+//  * @returns SHA256 hash signature
+//  */
+// export const createSignature = (secret: string, content: string) =>
+// 	crypto.createHmac('SHA256', secret).update(content).digest('hex')
+
+// /**
+//  * It compares two signatures and returns true if they match
+//  * @param sig1 - The signature you received from the request header
+//  * @param sig2 - The signature that was sent to us by the client.
+//  * @returns boolean
+//  */
+// export const matchSignature = (sig1: string, sig2: string) =>
+// 	crypto.timingSafeEqual(Buffer.from(sig1), Buffer.from(sig2))
+
+// /**
+//  * It takes a service name, a request object, and a response object, and returns true if the request
+//  * signature is valid, or sends a 401 response if it's not
+//  * @param VerifySignature
+//  * @returns `true` | `401 unauthorized` response
+//  */
+// export const verifySignature = ({ service, req, res }: VerifySignature) => {
+// 	const signature =
+// 		req.headers[
+// 			service === 'asana'
+// 				? sigHeader.asana || sigHeader.asanaHook
+// 				: sigHeader[service]
+// 		]
+// 	invariant(typeof signature === 'string', 'Invalid Signature')
+// 	let payload: string = ''
+
+// 	switch (service) {
+// 		case 'asanapr':
+// 		case 'asana':
+// 			payload =
+// 				req.method === 'POST'
+// 					? req.body.data
+// 					: new URLSearchParams(req.query as Record<string, any>).toString()
+// 			break
+// 	}
+// 	const computedSignature = createSignature(token[service], payload)
+
+// 	if (matchSignature(signature, computedSignature)) {
+// 		console.log(`${service} request signature verified`)
+// 		return true
+// 	}
+// 	console.warn(`${service} request signature verification failed!`)
+// 	// return res.status(401).json({ message: 'Signature verification failed.' })
+// 	return false
+// }
 
 type VerifySignature = {
 	service: keyof typeof token
 	req: NextApiRequest
-	res: NextApiResponse
 }

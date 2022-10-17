@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { prisma } from 'util/prisma'
 import NextCors from 'nextjs-cors'
-import { createSignature, matchSignature } from 'util/crypto'
+import { verifySignature } from 'util/crypto'
 import { webhookHandler, WebhookEvent } from 'src/bots/asana/webhookHandler'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -46,12 +46,15 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		})
 		if (typeof secret !== 'string')
 			return res.status(404).json({ message: 'Id not found' })
-		const computedSignature = createSignature(secret, JSON.stringify(req.body))
 
-		const sigMatch = matchSignature(
-			req.headers['x-hook-signature'] as string,
-			computedSignature
-		)
+		const sigMatch = await verifySignature({ service: 'asana', req })
+
+		// const computedSignature = createSignature(secret, JSON.stringify(req.body))
+
+		// const sigMatch = matchSignature(
+		// 	req.headers['x-hook-signature'] as string,
+		// 	computedSignature
+		// )
 
 		console.log(`Signature Match: ${sigMatch}`)
 		if (!sigMatch) {

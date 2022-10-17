@@ -8,7 +8,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		origin: 'https://app.asana.com',
 	})
 
-	if (!verifySignature({ service: 'asanapr', req, res }))
+	if (!(await verifySignature({ service: 'asanapr', req })))
 		return res.status(401).json({ message: 'Signature verification failed.' })
 	if (!req.query.task) return res.status(400).end()
 	const { task, attachment } = req.query
