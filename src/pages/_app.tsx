@@ -9,8 +9,6 @@ import {
 	QueryClientProvider,
 } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { AppProps } from 'next/app'
-import Head from 'next/head'
 import { MantineProvider } from '@mantine/core'
 import { trpc } from 'util/trpc'
 

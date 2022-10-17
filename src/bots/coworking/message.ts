@@ -29,10 +29,9 @@ const attendees = async () => {
 		let name
 		if (i + 1 === arr.length) name = person.name
 		else if (i + 1 === arr.length - 1 && arr.length >= 3)
-			name = `${person.name}, and `
-		else if (i + 1 < arr.length && arr.length === 2)
-			name = `${person.name} and `
-		else if (i + 1 < arr.length && arr.length > 2) name = `${person.name}, `
+			name = `${person.name}, and`
+		else if (i + 1 < arr.length && arr.length === 2) name = `${person.name} and`
+		else if (i + 1 < arr.length && arr.length > 2) name = `${person.name},`
 
 		return [
 			{
