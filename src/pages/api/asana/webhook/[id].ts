@@ -3,11 +3,16 @@ import { prisma } from 'util/prisma'
 import NextCors from 'nextjs-cors'
 import { verifySignature } from 'util/crypto'
 import { webhookHandler, WebhookEvent } from 'src/bots/asana/webhookHandler'
+import { allowedMethods } from 'util/allowedMethods'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
+	if (!allowedMethods(['POST'], req)) {
+		res.status(405).end()
+		return
+	}
 	const { id } = req.query
 	console.log(`Incoming project webhook: ${id}`)
 
@@ -47,7 +52,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 		if (typeof secret !== 'string')
 			return res.status(404).json({ message: 'Id not found' })
 
-		const sigMatch = await verifySignature({ service: 'asana', req })
+		const sigMatch = verifySignature({ service: 'asana', req })
 
 		// const computedSignature = createSignature(secret, JSON.stringify(req.body))
 

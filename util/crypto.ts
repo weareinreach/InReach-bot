@@ -1,6 +1,5 @@
-// import crypto from 'crypto'
-// import invariant from 'tiny-invariant'
-import { NextApiRequest, NextApiResponse } from 'next'
+import crypto, { webcrypto } from 'crypto'
+import { NextApiRequest } from 'next'
 
 const token = {
 	asana: process.env.ASANA_CLIENT_SECRET,
@@ -21,115 +20,110 @@ const sigHeader = {
 }
 
 /**
- * It takes a secret string and returns a key that can be used to sign and verify data
- * @param {string} secret - The secret key used to sign the token.
+ * It takes an object with a bunch of optional properties, and returns a string with those properties
+ * in a specific order
+ *
+ * For some reaason, Vercel has been changing the order of the query string, causing the Asana GET signature
+ * verification to fail.
+ *
+ * @param  query - Asana Query Params
+ * @returns A string
  */
-const createKey = async (secret: string) =>
-	await crypto.subtle.importKey(
-		'raw',
-		new TextEncoder().encode(secret),
-		{ name: 'HMAC', hash: 'SHA-256' },
-		false,
-		['sign', 'verify']
-	)
+const reorderAsanaQuery = (query: AsanaQueryOrder) => {
+	const {
+		attachment,
+		asset,
+		workspace,
+		expires,
+		expires_at,
+		locale,
+		resource_url,
+		task,
+		user,
+	} = query
+	return new URLSearchParams({
+		attachment,
+		asset,
+		workspace,
+		expires,
+		expires_at,
+		locale,
+		resource_url,
+		task,
+		user,
+	}).toString()
+}
 
-export const verifySignature = async ({ service, req }: VerifySignature) => {
-	const key = await createKey(token[service])
+/**
+ * It takes a secret and a content string, and returns a SHA256 hash of the content string, using the
+ * secret as the key
+ * @param secret - The secret key used to create the signature.
+ * @param content - The content to be signed.
+ * @returns SHA256 hash signature
+ */
+export const createSignature = (secret: string, content: string) =>
+	crypto.createHmac('sha256', secret).update(content).digest('hex')
 
-	const signatureVal =
+/**
+ * It compares two signatures and returns true if they match
+ * @param sig1 - The signature you received from the request header
+ * @param sig2 - The signature that was sent to us by the client.
+ * @returns boolean
+ */
+export const matchSignature = (sig1: string, sig2: string) =>
+	crypto.timingSafeEqual(Buffer.from(sig1), Buffer.from(sig2))
+
+/**
+ * It takes a service name, a request object, and a response object, and returns true if the request
+ * signature is valid, or sends a 401 response if it's not
+ * @param VerifySignature
+ * @returns `true` | `401 unauthorized` response
+ */
+export const verifySignature = ({ service, req }: VerifySignature) => {
+	const signature =
 		req.headers[
 			service === 'asana'
 				? sigHeader.asana || sigHeader.asanaHook
 				: sigHeader[service]
 		]
-	if (typeof signatureVal !== 'string') {
-		console.log('Signature is not a string')
+	if (typeof signature !== 'string') {
+		console.warn('Signature is not a string')
 		return false
 	}
-
-	const signature = Uint8Array.from(atob(signatureVal), (c) => c.charCodeAt(0))
 	let payload: string = ''
+
 	switch (service) {
 		case 'asanapr':
 		case 'asana':
 			payload =
 				req.method === 'POST'
-					? req.body.data
-					: new URLSearchParams(req.query as Record<string, any>).toString()
+					? JSON.stringify(req.body.data)
+					: reorderAsanaQuery(req.query as AsanaQueryOrder)
 			break
 	}
+	const computedSignature = createSignature(token[service], payload)
 
-	const isValid = await crypto.subtle.verify(
-		{ name: 'HMAC' },
-		key,
-		signature,
-		Uint8Array.from(payload, (c) => c.charCodeAt(0))
-	)
-
-	if (isValid) {
-		console.info(`${service} request signature verification passed.`)
+	if (matchSignature(signature, computedSignature)) {
+		console.log(`${service} request signature verified`)
 		return true
 	}
 	console.warn(`${service} request signature verification failed!`)
 	return false
 }
 
-// /**
-//  * It takes a secret and a content string, and returns a SHA256 hash of the content string, using the
-//  * secret as the key
-//  * @param secret - The secret key used to create the signature.
-//  * @param content - The content to be signed.
-//  * @returns SHA256 hash signature
-//  */
-// export const createSignature = (secret: string, content: string) =>
-// 	crypto.createHmac('SHA256', secret).update(content).digest('hex')
-
-// /**
-//  * It compares two signatures and returns true if they match
-//  * @param sig1 - The signature you received from the request header
-//  * @param sig2 - The signature that was sent to us by the client.
-//  * @returns boolean
-//  */
-// export const matchSignature = (sig1: string, sig2: string) =>
-// 	crypto.timingSafeEqual(Buffer.from(sig1), Buffer.from(sig2))
-
-// /**
-//  * It takes a service name, a request object, and a response object, and returns true if the request
-//  * signature is valid, or sends a 401 response if it's not
-//  * @param VerifySignature
-//  * @returns `true` | `401 unauthorized` response
-//  */
-// export const verifySignature = ({ service, req, res }: VerifySignature) => {
-// 	const signature =
-// 		req.headers[
-// 			service === 'asana'
-// 				? sigHeader.asana || sigHeader.asanaHook
-// 				: sigHeader[service]
-// 		]
-// 	invariant(typeof signature === 'string', 'Invalid Signature')
-// 	let payload: string = ''
-
-// 	switch (service) {
-// 		case 'asanapr':
-// 		case 'asana':
-// 			payload =
-// 				req.method === 'POST'
-// 					? req.body.data
-// 					: new URLSearchParams(req.query as Record<string, any>).toString()
-// 			break
-// 	}
-// 	const computedSignature = createSignature(token[service], payload)
-
-// 	if (matchSignature(signature, computedSignature)) {
-// 		console.log(`${service} request signature verified`)
-// 		return true
-// 	}
-// 	console.warn(`${service} request signature verification failed!`)
-// 	// return res.status(401).json({ message: 'Signature verification failed.' })
-// 	return false
-// }
-
 type VerifySignature = {
 	service: keyof typeof token
 	req: NextApiRequest
+}
+
+type AsanaQueryOrder = {
+	attachment: string
+	asset: string
+	workspace: string
+	expires: string
+	expires_at: string
+	locale: string
+	resource_url: string
+	task: string
+	user: string
 }

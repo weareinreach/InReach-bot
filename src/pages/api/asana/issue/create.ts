@@ -5,12 +5,17 @@ import { verifySignature } from 'util/crypto'
 import { bodyTagsRegex } from 'util/regex'
 import invariant from 'tiny-invariant'
 import { bodyBlock } from 'src/bots/asana/attachIssue'
+import { allowedMethods } from 'util/allowedMethods'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
-	if (!(await verifySignature({ service: 'asana', req })))
+	if (!allowedMethods(['POST'], req)) {
+		res.status(405).end()
+		return
+	}
+	if (!verifySignature({ service: 'asana', req }))
 		return res.status(401).json({ message: 'Signature verification failed.' })
 
 	const gh = await probot.auth(parseInt(process.env.GITHUB_INSTALL_ID))

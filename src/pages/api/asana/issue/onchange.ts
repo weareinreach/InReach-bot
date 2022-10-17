@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { attachModal, createIssueModal } from 'src/bots/asana/modal'
+import { allowedMethods } from 'util/allowedMethods'
 import { verifySignature } from 'util/crypto'
 
 /**
@@ -25,14 +26,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
-	if (!(await verifySignature({ service: 'asana', req })))
+	if (!allowedMethods(['POST'], req)) {
+		res.status(405).end()
+		return
+	}
+	if (!verifySignature({ service: 'asana', req }))
 		return res.status(401).json({ message: 'Signature verification failed.' })
 
 	const data: OnChangeBody = JSON.parse(req.body.data)
 
 	const view = await getView(data)
-
-	// const view = await modal(data.values.repo)
 
 	return res.status(200).json(view)
 }
