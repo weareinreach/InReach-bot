@@ -15,7 +15,7 @@ export const storeAttendee = async (
 	display_name: string,
 	userObj: CoworkAttendee
 ) => {
-	const res = await redis.set(display_name, userObj, { ex: 120 })
+	const res = await redis.set(display_name, userObj, { ex: 300 })
 	return res
 }
 
