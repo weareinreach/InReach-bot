@@ -1,16 +1,21 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { probot } from '../../github'
+import { probot } from 'src/bots/github'
 import NextCors from 'nextjs-cors'
 import { verifySignature } from 'util/crypto'
 import { bodyTagsRegex } from 'util/regex'
 import invariant from 'tiny-invariant'
 import { bodyBlock } from 'src/bots/asana/attachIssue'
+import { allowedMethods } from 'util/allowedMethods'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
-	if (!verifySignature({ service: 'asanapr', req, res }))
+	if (!allowedMethods(['POST'], req)) {
+		res.status(405).end()
+		return
+	}
+	if (!verifySignature({ service: 'asana', req }))
 		return res.status(401).json({ message: 'Signature verification failed.' })
 
 	const gh = await probot.auth(parseInt(process.env.GITHUB_INSTALL_ID))

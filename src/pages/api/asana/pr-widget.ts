@@ -1,14 +1,19 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import NextCors from 'nextjs-cors'
 import { createPrWidget } from 'src/bots/asana/createPrWidget'
+import { allowedMethods } from 'util/allowedMethods'
 import { verifySignature } from 'util/crypto'
 
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
 	await NextCors(req, res, {
 		origin: 'https://app.asana.com',
 	})
+	if (!allowedMethods(['GET'], req)) {
+		res.status(405).end()
+		return
+	}
 
-	if (!verifySignature({ service: 'asanapr', req, res }))
+	if (!verifySignature({ service: 'asanapr', req }))
 		return res.status(401).json({ message: 'Signature verification failed.' })
 	if (!req.query.task) return res.status(400).end()
 	const { task, attachment } = req.query

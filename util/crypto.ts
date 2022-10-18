@@ -1,6 +1,5 @@
-import crypto from 'crypto'
-import invariant from 'tiny-invariant'
-import { NextApiRequest, NextApiResponse } from 'next'
+import crypto, { webcrypto } from 'crypto'
+import { NextApiRequest } from 'next'
 
 const token = {
 	asana: process.env.ASANA_CLIENT_SECRET,
@@ -21,6 +20,41 @@ const sigHeader = {
 }
 
 /**
+ * It takes an object with a bunch of optional properties, and returns a string with those properties
+ * in a specific order
+ *
+ * For some reaason, Vercel has been changing the order of the query string, causing the Asana GET signature
+ * verification to fail.
+ *
+ * @param  query - Asana Query Params
+ * @returns A string
+ */
+const reorderAsanaQuery = (query: AsanaQueryOrder) => {
+	const {
+		attachment,
+		asset,
+		workspace,
+		expires,
+		expires_at,
+		locale,
+		resource_url,
+		task,
+		user,
+	} = query
+	return new URLSearchParams({
+		attachment,
+		asset,
+		workspace,
+		expires,
+		expires_at,
+		locale,
+		resource_url,
+		task,
+		user,
+	}).toString()
+}
+
+/**
  * It takes a secret and a content string, and returns a SHA256 hash of the content string, using the
  * secret as the key
  * @param secret - The secret key used to create the signature.
@@ -28,7 +62,7 @@ const sigHeader = {
  * @returns SHA256 hash signature
  */
 export const createSignature = (secret: string, content: string) =>
-	crypto.createHmac('SHA256', secret).update(content).digest('hex')
+	crypto.createHmac('sha256', secret).update(content).digest('hex')
 
 /**
  * It compares two signatures and returns true if they match
@@ -45,14 +79,17 @@ export const matchSignature = (sig1: string, sig2: string) =>
  * @param VerifySignature
  * @returns `true` | `401 unauthorized` response
  */
-export const verifySignature = ({ service, req, res }: VerifySignature) => {
+export const verifySignature = ({ service, req }: VerifySignature) => {
 	const signature =
 		req.headers[
 			service === 'asana'
 				? sigHeader.asana || sigHeader.asanaHook
 				: sigHeader[service]
 		]
-	invariant(typeof signature === 'string', 'Invalid Signature')
+	if (typeof signature !== 'string') {
+		console.warn('Signature is not a string')
+		return false
+	}
 	let payload: string = ''
 
 	switch (service) {
@@ -60,8 +97,8 @@ export const verifySignature = ({ service, req, res }: VerifySignature) => {
 		case 'asana':
 			payload =
 				req.method === 'POST'
-					? req.body.data
-					: new URLSearchParams(req.query as Record<string, any>).toString()
+					? JSON.stringify(req.body.data)
+					: reorderAsanaQuery(req.query as AsanaQueryOrder)
 			break
 	}
 	const computedSignature = createSignature(token[service], payload)
@@ -71,12 +108,22 @@ export const verifySignature = ({ service, req, res }: VerifySignature) => {
 		return true
 	}
 	console.warn(`${service} request signature verification failed!`)
-	// return res.status(401).json({ message: 'Signature verification failed.' })
 	return false
 }
 
 type VerifySignature = {
 	service: keyof typeof token
 	req: NextApiRequest
-	res: NextApiResponse
+}
+
+type AsanaQueryOrder = {
+	attachment: string
+	asset: string
+	workspace: string
+	expires: string
+	expires_at: string
+	locale: string
+	resource_url: string
+	task: string
+	user: string
 }

@@ -1,5 +1,5 @@
 import { prisma } from 'util/prisma'
-import { probot } from 'src/pages/api/github'
+import { probot } from '../github'
 import { asanaBlockRegex } from 'util/regex'
 
 const ignoreUsers = ['renovate[bot]']
