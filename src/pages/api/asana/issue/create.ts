@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { probot } from '../../github'
+import { probot } from 'src/bots/github'
 import NextCors from 'nextjs-cors'
 import { verifySignature } from 'util/crypto'
 import { bodyTagsRegex } from 'util/regex'

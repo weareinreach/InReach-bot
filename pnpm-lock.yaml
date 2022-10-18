@@ -18,6 +18,7 @@ specifiers:
   '@octokit/graphql': ^5.0.3
   '@octokit/graphql-schema': ^12.11.0
   '@octokit/types': ^8.0.0
+  '@octokit/webhooks': ^10.3.0
   '@octokit/webhooks-types': ^6.4.0
   '@prisma/client': ^4.4.0
   '@sentry/nextjs': ^7.15.0
@@ -34,7 +35,7 @@ specifiers:
   '@tsconfig/next': ^1.0.3
   '@types/asana': ^0.18.11
   '@types/luxon': ^3.0.2
-  '@types/node': '16'
+  '@types/node': ^16
   '@types/react': 18.0.21
   '@types/react-dom': 18.0.6
   '@types/showdown': ^2.0.0
@@ -83,6 +84,7 @@ dependencies:
   '@octokit/auth-app': 4.0.7
   '@octokit/graphql': 5.0.3
   '@octokit/graphql-schema': 12.11.0
+  '@octokit/webhooks': 10.3.0
   '@prisma/client': 4.4.0_prisma@4.4.0
   '@sentry/nextjs': 7.15.0_next@12.3.1+react@18.2.0
   '@slack/bolt': 3.12.1

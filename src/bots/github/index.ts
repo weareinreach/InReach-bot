@@ -1,4 +1,4 @@
-import { Probot } from 'probot'
+import { createProbot, Probot } from 'probot'
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from 'octokit'
 import { createAsanaTask } from './createAsanaTask'
@@ -7,6 +7,15 @@ import { asanaBlockRegex } from 'util/regex'
 import { labelActions } from './actions/label'
 import { Prisma } from '@prisma/client'
 import { linkPullRequest } from './actions/prLink'
+
+export const probot = createProbot({
+	overrides: {
+		privateKey: Buffer.from(process.env.GITHUB_PRIVATE_KEY, 'base64').toString(
+			'utf-8'
+		),
+		appId: process.env.GITHUB_APP_ID,
+	},
+})
 
 /* It's creating a new Octokit client that uses the GitHub App's private key to authenticate. */
 export const githubClient = new Octokit({
@@ -27,8 +36,10 @@ export const githubClient = new Octokit({
  * @param app - Probot - This is the Probot app that we're using to create our GitHub bot.
  */
 export const githubBot = (app: Probot) => {
-	/* When an issue is opened, create an Asana ticket, if it's a watched Repo and a ticket has not already been created. */
+	app.log('Probot loaded.')
+
 	try {
+		/* When an issue is opened, create an Asana ticket, if it's a watched Repo and a ticket has not already been created. */
 		app.on('issues.opened', async (context) => {
 			/* It's checking to see if the repo is watched. */
 			if (!isWatchedRepo(context.payload)) return
