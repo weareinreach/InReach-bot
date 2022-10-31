@@ -4,7 +4,7 @@ import { createInvite } from './zoom'
 
 export const slackJrBot = (app: App) => {
 	app.use(async ({ payload, next }) => {
-		console.log('InReachBotJr', payload)
+		// console.log('InReachBotJr', payload)
 		await next()
 	})
 
@@ -59,7 +59,7 @@ export const slackJrBot = (app: App) => {
 		})
 	})
 	app.action('joinzoom', async ({ ack, client, body }) => {
-		console.log('slack: invite accepted')
+		// console.log('slack: invite accepted')
 		await ack()
 
 		await client.views.update({
@@ -89,7 +89,7 @@ export const slackJrBot = (app: App) => {
 		async ({ ack }) => await ack({ response_action: 'clear' })
 	)
 	app.event('app_home_opened', async ({ event, client }) => {
-		console.log('app home opened', event)
+		// console.log('app home opened', event)
 		await client.views.publish({
 			user_id: event.user,
 			view: {
