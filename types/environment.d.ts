@@ -51,6 +51,10 @@ declare global {
 			PRASANA_CLIENT_ID: string
 			PRASANA_CLIENT_SECRET: string
 			SLACK_WORKSPACE_ID: string
+
+			NEW_RELIC_APP_NAME: string
+			NEW_RELIC_LICENSE_KEY: string
+			NEW_RELIC_ATTRIBUTES_EXCLUDE: string
 		}
 	}
 }
