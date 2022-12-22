@@ -71,7 +71,7 @@
 		"@tsconfig/next": "^1.0.3",
 		"@types/asana": "^0.18.11",
 		"@types/luxon": "^3.0.2",
-		"@types/newrelic": "^7.0.4",
+		"@types/newrelic": "9.4.0",
 		"@types/node": "^16",
 		"@types/react": "18.0.25",
 		"@types/react-dom": "18.0.8",
