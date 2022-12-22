@@ -2,11 +2,11 @@
 import { router } from '../trpc'
 import { authRouter } from './auth'
 import { githubRouter } from './github'
-import { asanaRouter } from './asana'
+// import { asanaRouter } from './asana'
 
 export const appRouter = router({
 	github: githubRouter,
-	asana: asanaRouter,
+	// asana: asanaRouter,
 	auth: authRouter,
 })
 
