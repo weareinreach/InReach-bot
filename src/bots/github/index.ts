@@ -1,12 +1,12 @@
 import { createProbot, Probot } from 'probot'
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from 'octokit'
-import { createAsanaTask } from './createAsanaTask'
+// import { createAsanaTask } from './createAsanaTask'
 import { isWatchedRepo } from './isWatchedRepo'
 import { asanaBlockRegex } from 'util/regex'
-import { labelActions } from './actions/label'
+// import { labelActions } from './actions/label'
 import { Prisma } from '@prisma/client'
-import { linkPullRequest } from './actions/prLink'
+// import { linkPullRequest } from './actions/prLink'
 
 export const probot = createProbot({
 	overrides: {
@@ -50,8 +50,9 @@ export const githubBot = (app: Probot) => {
 			}
 
 			/* It's creating an Asana task. */
-			const task = createAsanaTask(context.payload)
-			return task
+			// const task = createAsanaTask(context.payload)
+			// return task
+			return
 		})
 
 		app.on('issues.edited', async (context) => {
@@ -68,14 +69,14 @@ export const githubBot = (app: Probot) => {
 			if (!isWatchedRepo(context.payload)) return
 			console.info('label event')
 
-			return await labelActions(context.payload)
+			return //await labelActions(context.payload)
 		})
 		app.on('pull_request', async (context) => {
 			/* It's checking to see if the repo is watched. */
 			if (!isWatchedRepo(context.payload)) return
 
 			/* It's linking the PR to the Asana task. */
-			await linkPullRequest(context)
+			//await linkPullRequest(context)
 		})
 	} catch (err) {
 		if (err instanceof Prisma.NotFoundError) {

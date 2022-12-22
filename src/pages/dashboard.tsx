@@ -16,7 +16,7 @@ import { useSession } from 'next-auth/react'
 import { z } from 'zod'
 import { trpc } from 'util/trpc'
 import { useEffect } from 'react'
-import { createAsanaWebhook } from 'src/bots/asana/createWebhook'
+// import { createAsanaWebhook } from 'src/bots/asana/createWebhook'
 import { useRouter } from 'next/router'
 
 const useStyles = createStyles((theme) => ({
@@ -91,10 +91,10 @@ const Dashboard = () => {
 	const form = useForm<Record<string, string>>()
 	const repos = trpc.github.getActiveRepos.useQuery()
 	// const asanaWorkspace = trpc.asana.getWorkspaces.useQuery()
-	const asanaProjects = trpc.asana.getProjects.useQuery()
+	// const asanaProjects = trpc.asana.getProjects.useQuery()
 	const asanaBoardMutation = trpc.github.attachAsanaBoard.useMutation()
-	const asanaActiveProjects = trpc.asana.getActiveProjects.useQuery()
-	const asanaWebhookCreate = trpc.asana.createWebhook.useMutation()
+	// const asanaActiveProjects = trpc.asana.getActiveProjects.useQuery()
+	// const asanaWebhookCreate = trpc.asana.createWebhook.useMutation()
 	const router = useRouter()
 
 	const handleSubmit = () => {
@@ -115,12 +115,12 @@ const Dashboard = () => {
 		if (data.length) asanaBoardMutation.mutate(validated)
 	}
 
-	const projectOptions = asanaProjects.isFetched
-		? asanaProjects.data!.map((item) => ({
-				value: item.gid,
-				label: item.name,
-		  }))
-		: [{ value: '', label: '' }]
+	// const projectOptions = asanaProjects.isFetched
+	// 	? asanaProjects.data!.map((item) => ({
+	// 			value: item.gid,
+	// 			label: item.name,
+	// 	  }))
+	// 	: [{ value: '', label: '' }]
 
 	const items = tabs.map((tab) => (
 		<Tabs.Tab value={tab} key={tab}>
@@ -136,7 +136,7 @@ const Dashboard = () => {
 								className={classes.repoName}
 							>{`${repo.org.githubOwner}/${repo.repo}`}</Text>
 							<Select
-								data={projectOptions}
+								// data={projectOptions}
 								placeholder='Select Asana Board'
 								{...form.getInputProps(repo.id)}
 							/>
@@ -145,38 +145,38 @@ const Dashboard = () => {
 			  })
 			: null
 
-	const webhookStatus =
-		asanaActiveProjects.data && asanaActiveProjects.isFetched
-			? asanaActiveProjects.data?.map((item) => {
-					const webhookExists = !!item.asanaWebhook?.webhookId
-					return (
-						<Group key={item.id}>
-							<Badge
-								color={webhookExists ? 'blue' : 'red'}
-								size='lg'
-								className={webhookExists ? classes.none : classes.badgeHover}
-								onClick={
-									webhookExists
-										? undefined
-										: () => asanaWebhookCreate.mutate(item.boardId)
-								}
-							>
-								{webhookExists ? 'Active' : 'Activate'}
-							</Badge>
-							<Text>{`${item.boardId} - ${
-								item.boardName ?? 'Board name missing'
-							}`}</Text>
-						</Group>
-					)
-			  })
-			: null
+	const webhookStatus = null
+	// asanaActiveProjects.data && asanaActiveProjects.isFetched
+	// ? asanaActiveProjects.data?.map((item) => {
+	// 	const webhookExists = !!item.asanaWebhook?.webhookId
+	// 	return (
+	// 		<Group key={item.id}>
+	// 			<Badge
+	// 				color={webhookExists ? 'blue' : 'red'}
+	// 				size='lg'
+	// 				className={webhookExists ? classes.none : classes.badgeHover}
+	// 				onClick={
+	// 					webhookExists
+	// 						? undefined
+	// 						: () => asanaWebhookCreate.mutate(item.boardId)
+	// 				}
+	// 			>
+	// 				{webhookExists ? 'Active' : 'Activate'}
+	// 			</Badge>
+	// 			<Text>{`${item.boardId} - ${
+	// 				item.boardName ?? 'Board name missing'
+	// 			}`}</Text>
+	// 		</Group>
+	// 	)
+	// })
+	// : null
 
 	useEffect(() => {
 		if (
 			repos.isFetched &&
-			asanaProjects.isFetched &&
-			repos.data &&
-			asanaProjects.data
+			//asanaProjects.isFetched &&
+			repos.data
+			//asanaProjects.data
 		) {
 			repos.data.forEach((item) =>
 				item.asanaBoard?.boardId
@@ -185,7 +185,7 @@ const Dashboard = () => {
 			)
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [repos.isFetched, asanaProjects.isFetched])
+	}, [repos.isFetched /* asanaProjects.isFetched*/])
 
 	if (authStatus === 'loading') {
 		return <p>Loading...</p>
