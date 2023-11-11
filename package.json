@@ -27,7 +27,7 @@
 		"@octokit/graphql-schema": "12.41.1",
 		"@octokit/webhooks": "10.9.1",
 		"@prisma/client": "5.3.1",
-		"@sentry/nextjs": "7.70.0",
+		"@sentry/nextjs": "7.77.0",
 		"@slack/bolt": "3.14.0",
 		"@slack/logger": "3.0.0",
 		"@slack/oauth": "2.6.1",
