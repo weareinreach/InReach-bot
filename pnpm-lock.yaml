@@ -48,8 +48,8 @@ dependencies:
     specifier: 12.41.1
     version: 12.41.1
   '@octokit/webhooks':
-    specifier: 10.9.1
-    version: 10.9.1
+    specifier: 10.9.2
+    version: 10.9.2
   '@prisma/client':
     specifier: 5.11.0
     version: 5.11.0(prisma@5.11.0)
@@ -1003,7 +1003,7 @@ packages:
       '@octokit/oauth-app': 4.2.4
       '@octokit/plugin-paginate-rest': 6.1.2(@octokit/core@4.2.4)
       '@octokit/types': 9.3.2
-      '@octokit/webhooks': 10.9.1
+      '@octokit/webhooks': 10.9.2
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -1376,8 +1376,8 @@ packages:
   /@octokit/webhooks-types@6.4.0:
     resolution: {integrity: sha512-epkcGuajnLfavJoa1oGby158Ki3vZrs3DYK9Yi1X+stM3KcEwOuaXRsONIRw6fGdtgYlkZ01IWcl5NKJb7+jmg==}
 
-  /@octokit/webhooks@10.9.1:
-    resolution: {integrity: sha512-5NXU4VfsNOo2VSU/SrLrpPH2Z1ZVDOWFcET4EpnEBX1uh/v8Uz65UVuHIRx5TZiXhnWyRE9AO1PXHa+M/iWwZA==}
+  /@octokit/webhooks@10.9.2:
+    resolution: {integrity: sha512-hFVF/szz4l/Y/GQdKxNmQjUke0XJXK986p+ucIlubTGVPVtVtup5G1jarQfvCMBs9Fvlf9dvH8K83E4lefmofQ==}
     engines: {node: '>= 14'}
     dependencies:
       '@octokit/request-error': 3.0.3
