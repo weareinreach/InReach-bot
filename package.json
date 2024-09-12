@@ -28,7 +28,7 @@
 		"@octokit/webhooks": "10.9.1",
 		"@prisma/client": "5.11.0",
 		"@sentry/nextjs": "7.70.0",
-		"@slack/bolt": "3.17.1",
+		"@slack/bolt": "3.21.4",
 		"@slack/logger": "3.0.0",
 		"@slack/oauth": "2.6.2",
 		"@slack/web-api": "6.12.0",
