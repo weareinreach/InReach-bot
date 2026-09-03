@@ -86,7 +86,7 @@
 	},
 	"pnpm": {
 		"overrides": {
-			"@octokit/webhooks-types": "^6.4.0"
+			"@octokit/webhooks-types": "6.11.0"
 		}
 	}
 }
